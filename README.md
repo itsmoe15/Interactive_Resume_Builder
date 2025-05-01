@@ -2,9 +2,9 @@
 
 # Interactive Resume Builder
 **IMPORTANT LINKS**
-- [**Project Board**]("https://github.com/users/itsmoe15/projects/4")
-- [**Project Repo**]("https://github.com/itsmoe15/ITI_CV_Maker/")
-- [**Project Report**]("https://docs.google.com/document/d/1DDLFYgg_SS64KCy9mG_lxH58C5Mj8EhpeS-acUqeazM/edit?usp=sharing")
+- [**📝Project Board**](https://github.com/users/itsmoe15/projects/4)
+- [**🧑‍💻Project Repo**](https://github.com/itsmoe15/ITI_CV_Maker/)
+- [**📄Project Report**](https://docs.google.com/document/d/1DDLFYgg_SS64KCy9mG_lxH58C5Mj8EhpeS-acUqeazM/edit?usp=sharing)
 
 
 
