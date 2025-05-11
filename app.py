@@ -1,12 +1,21 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
-from werkzeug.security import generate_password_hash, check_password_hash
+import bcrypt
+import os
+from werkzeug.utils import secure_filename
+import base64
+from ATS_Propmpt import analyze_cv
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '78120e13a1ebe5873632be67742048eaa73aaaa4cc7d1db8309f2406917ec59d'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+
+# Ensure upload folder exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -19,8 +28,7 @@ class User(UserMixin, db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
-
+    return db.session.get(User, int(user_id))
 
 @app.route('/')
 @login_required
@@ -35,7 +43,7 @@ def login():
         
         user = User.query.filter_by(username=username).first()
         
-        if user and check_password_hash(user.password, password):
+        if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
             login_user(user)
             return redirect(url_for('home'))
         
@@ -46,15 +54,15 @@ def login():
 def register():
     if request.method == 'POST':
         username = request.form.get('username')
-        password = generate_password_hash(request.form.get('password'))
+        password = request.form.get('password')
         
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already exists')
             return redirect(url_for('register'))
         
-        new_user = User(username=username, password=password)
-        db.create_all()
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=12))
+        new_user = User(username=username, password=hashed.decode('utf-8'))
         db.session.add(new_user)
         db.session.commit()
         
@@ -69,7 +77,79 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@app.route('/chatbot')
+@login_required
+def chatbot():
+    return render_template('chatbot.html')
+
+@app.route('/chat', methods=['POST'])
+@login_required
+def chat():
+    data = request.get_json()
+    user_message = data.get('message', '')
+    
+    response = {
+        'response': f"I received your message: {user_message}. This is a placeholder response.",
+        'cv_update': f"<h4>CV Preview</h4><p>This is where the CV content will be updated based on the conversation.</p>"
+    }
+    
+    return jsonify(response)
+
+@app.route('/ats-checker')
+@login_required
+def ats_checker():
+    return render_template('ats_checker.html')
+
+@app.route('/check-ats', methods=['POST'])
+@login_required
+def check_ats():
+    if 'cv' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['cv']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+
+    # Check file type
+    allowed_extensions = {'.pdf', '.doc', '.docx'}
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in allowed_extensions:
+        return jsonify({'error': 'Invalid file type. Please upload a PDF or Word document.'}), 400
+
+    # Save file temporarily
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    try:
+        file.save(filepath)
+        
+        # Read file content
+        with open(filepath, 'rb') as f:
+            file_content = f.read()
+        
+        # Convert to base64
+        base64_content = base64.b64encode(file_content).decode('utf-8')
+        
+        # Analyze CV using our library
+        analysis_result = analyze_cv(base64_content)
+        
+        # Clean up the temporary file
+        os.remove(filepath)
+        
+        # Return the analysis result
+        return jsonify(analysis_result)
+    
+    except ValueError as e:
+        # Clean up the temporary file
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        # Clean up the temporary file
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        app.logger.error(f"Error in check_ats: {str(e)}")
+        return jsonify({'error': 'An error occurred while analyzing your CV. Please try again.'}), 500
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)

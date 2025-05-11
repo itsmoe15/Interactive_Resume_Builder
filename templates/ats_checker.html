@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center mb-0">ATS Resume Checker</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Upload Section -->
+                    <div id="upload-section" class="text-center mb-4">
+                        <div class="upload-area p-5 border rounded" id="drop-zone">
+                            <i class="fas fa-cloud-upload-alt fa-4x mb-3 text-primary"></i>
+                            <h4>Drag & Drop your CV here</h4>
+                            <p class="text-muted">or</p>
+                            <input type="file" id="file-input" class="d-none" accept=".pdf,.doc,.docx">
+                            <button class="btn btn-primary btn-lg" onclick="document.getElementById('file-input').click()">
+                                <i class="fas fa-file-upload me-2"></i>Select File
+                            </button>
+                            <p class="mt-3 text-muted">Supported formats: PDF, DOC, DOCX</p>
+                        </div>
+                    </div>
+
+                    <!-- Loading Section -->
+                    <div id="loading-section" class="text-center d-none">
+                        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h4 class="mt-3">Analyzing your CV...</h4>
+                        <p class="text-muted">This may take up to 2 minutes</p>
+                        <div class="progress mt-3" style="height: 5px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="results-section" class="d-none">
+                        <!-- Overall Score -->
+                        <div class="score-card text-center mb-4 p-4 border rounded shadow-sm">
+                            <div class="score-circle mx-auto mb-3">
+                                <h2 id="overall-score" class="mb-0">0</h2>
+                                <small>Score</small>
+                            </div>
+                            <h4 id="rating" class="mt-2">Rating: <span class="badge bg-secondary">-</span></h4>
+                        </div>
+
+                        <!-- Sub-scores -->
+                        <div class="sub-scores mb-4">
+                            <h4 class="border-bottom pb-2">Detailed Analysis</h4>
+                            <div class="row" id="sub-scores-container">
+                                <!-- Sub-scores will be inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Issues and Suggestions -->
+                        <div class="issues-suggestions">
+                            <h4 class="border-bottom pb-2">Issues and Recommendations</h4>
+                            <div id="issues-container">
+                                <!-- Issues will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CV Preview Section -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">CV Preview</h4>
+                </div>
+                <div class="card-body">
+                    <div id="cv-preview" class="cv-preview-container">
+                        <div class="text-center text-muted py-5" id="no-cv-message">
+                            <i class="fas fa-file-alt fa-3x mb-3"></i>
+                            <p>Upload a CV to see preview</p>
+                        </div>
+                        <iframe id="cv-iframe" class="d-none" style="width: 100%; height: 600px; border: none;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.upload-area:hover {
+    border-color: #0d6efd;
+    background-color: #f1f3f5;
+}
+
+.upload-area.dragover {
+    border-color: #0d6efd;
+    background-color: #e9ecef;
+    transform: scale(1.02);
+}
+
+.score-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #0d6efd;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.score-circle h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.sub-score-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.sub-score-item:hover {
+    transform: translateY(-2px);
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background-color: #0d6efd;
+    border-radius: 4px;
+}
+
+.issue-card {
+    margin-bottom: 20px;
+    border-left: 4px solid #0d6efd;
+    background-color: #f8f9fa;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.issue-card h5 {
+    color: #0d6efd;
+    margin-bottom: 15px;
+}
+
+.suggestion-item {
+    margin-left: 20px;
+    color: #495057;
+    position: relative;
+    padding-left: 20px;
+}
+
+.suggestion-item::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #0d6efd;
+}
+
+.cv-preview-container {
+    min-height: 600px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.badge {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+/* Animation for loading state */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading-pulse {
+    animation: pulse 1.5s infinite;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const uploadSection = document.getElementById('upload-section');
+    const loadingSection = document.getElementById('loading-section');
+    const resultsSection = document.getElementById('results-section');
+    const cvIframe = document.getElementById('cv-iframe');
+    const noCvMessage = document.getElementById('no-cv-message');
+
+    // Drag and drop handlers
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            handleFile(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        // Check file type
+        const allowedTypes = ['.pdf', '.doc', '.docx'];
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+        
+        if (!allowedTypes.includes(fileExt)) {
+            alert('Please upload a PDF or Word document');
+            return;
+        }
+
+        // Show loading state
+        uploadSection.classList.add('d-none');
+        loadingSection.classList.remove('d-none');
+        resultsSection.classList.add('d-none');
+
+        // Preview the file
+        if (fileExt === '.pdf') {
+            const fileUrl = URL.createObjectURL(file);
+            cvIframe.src = fileUrl;
+            cvIframe.classList.remove('d-none');
+            noCvMessage.classList.add('d-none');
+        } else {
+            // For non-PDF files, show a message
+            noCvMessage.innerHTML = `
+                <i class="fas fa-file-word fa-3x mb-3"></i>
+                <p>Preview not available for Word documents</p>
+            `;
+            noCvMessage.classList.remove('d-none');
+            cvIframe.classList.add('d-none');
+        }
+
+        // Create FormData and send file
+        const formData = new FormData();
+        formData.append('cv', file);
+
+        fetch('/check-ats', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            displayResults(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message || 'An error occurred while analyzing your CV');
+            resetUI();
+        });
+    }
+
+    function displayResults(data) {
+        // Update overall score
+        const scoreElement = document.getElementById('overall-score');
+        scoreElement.innerHTML = data.overall_score;
+        scoreElement.parentElement.style.background = getScoreColor(data.overall_score);
+        
+        document.getElementById('rating').innerHTML = 
+            `Rating: <span class="badge bg-${getRatingColor(data.rating)}">${data.rating}</span>`;
+
+        // Update sub-scores
+        const subScoresContainer = document.getElementById('sub-scores-container');
+        subScoresContainer.innerHTML = '';
+        
+        for (const [key, value] of Object.entries(data.sub_scores)) {
+            const score = Math.round(value * 100);
+            const div = document.createElement('div');
+            div.className = 'col-md-6 mb-3';
+            div.innerHTML = `
+                <div class="sub-score-item">
+                    <h5>${formatKey(key)}</h5>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: ${score}%" 
+                             aria-valuenow="${score}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            ${score}%
+                        </div>
+                    </div>
+                </div>
+            `;
+            subScoresContainer.appendChild(div);
+        }
+
+        // Update issues and suggestions
+        const issuesContainer = document.getElementById('issues-container');
+        issuesContainer.innerHTML = '';
+        
+        data.issues.forEach(issue => {
+            const div = document.createElement('div');
+            div.className = 'issue-card p-3';
+            div.innerHTML = `
+                <h5>${issue.category}</h5>
+                <div class="findings">
+                    ${issue.findings.map(finding => `<p class="mb-2">• ${finding}</p>`).join('')}
+                </div>
+                <div class="suggestions">
+                    <h6>Suggestions:</h6>
+                    ${issue.suggestions.map(suggestion => 
+                        `<p class="suggestion-item">• ${suggestion}</p>`).join('')}
+                </div>
+            `;
+            issuesContainer.appendChild(div);
+        });
+
+        // Show results
+        loadingSection.classList.add('d-none');
+        resultsSection.classList.remove('d-none');
+    }
+
+    function resetUI() {
+        uploadSection.classList.remove('d-none');
+        loadingSection.classList.add('d-none');
+        resultsSection.classList.add('d-none');
+        noCvMessage.classList.remove('d-none');
+        cvIframe.classList.add('d-none');
+    }
+
+    function formatKey(key) {
+        return key.split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+
+    function getRatingColor(rating) {
+        const colors = {
+            'Excellent': 'success',
+            'Good': 'primary',
+            'Moderate': 'warning',
+            'Poor': 'danger'
+        };
+        return colors[rating] || 'secondary';
+    }
+
+    function getScoreColor(score) {
+        if (score >= 90) return '#198754'; // success
+        if (score >= 70) return '#0d6efd'; // primary
+        if (score >= 50) return '#ffc107'; // warning
+        return '#dc3545'; // danger
+    }
+});
+</script>
+{% endblock %} 
