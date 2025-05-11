@@ -1,5 +1,4 @@
 import base64
-import os
 import json
 from google import genai
 from google.genai import types
@@ -249,4 +248,4 @@ You are an AI that ingests a user's CV (and optional job description), runs a ba
         raise ValueError("Invalid response format from AI model")
     except Exception as e:
         print(f"Error in analyze_cv: {e}")
-        raise
+        raise 

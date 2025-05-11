@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 import bcrypt
+from app import app, db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -16,8 +17,7 @@ class User(UserMixin, db.Model):
 
 def create_database():
     with app.app_context():
-        db.drop_all()  # This will delete all existing tables
-        db.create_all()  # This will create new tables
+        db.create_all()
         print("Database created successfully!")
 
 if __name__ == '__main__':

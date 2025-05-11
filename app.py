@@ -1,30 +1,24 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user
 import bcrypt
 import os
 from werkzeug.utils import secure_filename
 import base64
-from ATS_Propmpt import analyze_cv
+
+from app.config.config import Config
+from app.models.user import db, User
+from app.services.ats_service import analyze_cv
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '78120e13a1ebe5873632be67742048eaa73aaaa4cc7d1db8309f2406917ec59d'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config.from_object(Config)
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-db = SQLAlchemy(app)
+# Initialize extensions
+db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -130,7 +124,7 @@ def check_ats():
         # Convert to base64
         base64_content = base64.b64encode(file_content).decode('utf-8')
         
-        # Analyze CV using our library
+        # Analyze CV using our service
         analysis_result = analyze_cv(base64_content)
         
         # Clean up the temporary file
