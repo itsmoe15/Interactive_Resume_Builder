@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume Builder</title>
+    <style>
+        /* General Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #212121;
+            color: #ffffff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Input Styling */
+        .container input {
+            border-radius: 0.8rem;
+            background: #1a1a1a;
+            box-shadow:
+                inset 3px 3px 6px #151515,
+                inset -3px -3px 6px #1f1f1f;
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #26ffed;
+            color: white;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .container input:focus {
+            border: 1px solid #54fff1;
+            outline: none;
+            box-shadow:
+                0 0 10px rgba(38, 255, 237, 0.5),
+                inset 3px 3px 6px #151515,
+                inset -3px -3px 6px #1f1f1f;
+        }
+
+        .container textarea {
+            border-radius: 0.8rem;
+            background: #1a1a1a;
+            box-shadow:
+                inset 3px 3px 6px #151515,
+                inset -3px -3px 6px #1f1f1f;
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #26ffed;
+            color: white;
+            transition: all 0.2s ease-in-out;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .container textarea:focus {
+            border: 1px solid #54fff1;
+            outline: none;
+            box-shadow:
+                0 0 10px rgba(38, 255, 237, 0.5),
+                inset 3px 3px 6px #151515,
+                inset -3px -3px 6px #1f1f1f;
+        }
+
+        .container select {
+            border-radius: 0.8rem;
+            background: #1a1a1a;
+            box-shadow:
+                inset 3px 3px 6px #151515,
+                inset -3px -3px 6px #1f1f1f;
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #26ffed;
+            color: white;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .container select:focus {
+            border: 1px solid #54fff1;
+            outline: none;
+            box-shadow:
+                0 0 10px rgba(38, 255, 237, 0.5),
+                inset 3px 3px 6px #151515,
+                inset -3px -3px 6px #1f1f1f;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #26ffed;
+            text-shadow: 0 0 10px rgba(38, 255, 237, 0.3);
+        }
+
+        /* Form Sections */
+        .section {
+            background: linear-gradient(to bottom, #1a1a1a, #212121);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(38, 255, 237, 0.2);
+            border: 1px solid #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #84fff5;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #26ffed, #54fff1);
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: linear-gradient(to bottom, #54fff1, #84fff5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .remove-btn {
+            background: #1a1a1a;
+            color: #26ffed;
+            border: 1px solid #26ffed;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .secondary-btn {
+            background: #212121;
+            color: #54fff1;
+            border: 1px solid #54fff1;
+        }
+
+        /* Resume Preview */
+        #resume-preview {
+            background: linear-gradient(to bottom, #1a1a1a, #212121);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(38, 255, 237, 0.2);
+            height: fit-content;
+            border: 1px solid #333;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #26ffed;
+            padding-bottom: 10px;
+        }
+
+        .preview-section {
+            margin-bottom: 20px;
+        }
+
+        .preview-section h3 {
+            border-bottom: 1px solid #54fff1;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .preview-item {
+            margin-bottom: 15px;
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .progress-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .progress-step:not(:last-child):before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            right: 0;
+            height: 2px;
+            background: #444;
+            z-index: 0;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #444;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-step.active .step-number {
+            background: linear-gradient(to bottom, #26ffed, #54fff1);
+            color: #1a1a1a;
+            box-shadow: 0 0 10px rgba(38, 255, 237, 0.5);
+        }
+
+        /* Template Styles */
+        .template-modern .preview-header {
+            color: #26ffed;
+        }
+
+        .template-classic {
+            font-family: 'Times New Roman', serif;
+        }
+
+        .template-classic .preview-header {
+            color: #ffffff;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        .template-professional {
+            font-family: 'Calibri', sans-serif;
+        }
+
+        .template-professional .preview-header {
+            color: #54fff1;
+            border-bottom: 2px solid #54fff1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="template-modern">
+    <div class="container">
+        <header>
+            <h1>Interactive Resume Builder</h1>
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div>Personal</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div>Education</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div>Experience</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div>Skills</div>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <div class="step-number">5</div>
+                    <div>Style</div>
+                </div>
+            </div>
+        </header>
+
+        <main id="form-sections">
+            <!-- Personal Information Section -->
+            <section class="section form-step active" id="personal-section" data-step="1">
+                <h2>Personal Information</h2>
+                <form id="personal-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Name*</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title*</label>
+                        <input type="text" id="jobTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email*</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address">
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">Professional Summary</label>
+                        <textarea id="summary"></textarea>
+                    </div>
+                    <div class="nav-buttons">
+                        <button type="button" class="btn" onclick="nextStep(1)">Next: Education</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Education Section -->
+            <section class="section form-step" id="education-section" data-step="2">
+                <h2>Education</h2>
+                <div id="education-entries">
+                    <!-- Education entries will be added here -->
+                </div>
+                <button type="button" class="btn" onclick="addEducation()">+ Add Another Education</button>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(2)">Back</button>
+                    <button type="button" class="btn" onclick="nextStep(2)">Next: Experience</button>
+                </div>
+            </section>
+
+            <!-- Work Experience Section -->
+            <section class="section form-step" id="experience-section" data-step="3">
+                <h2>Work Experience</h2>
+                <div id="experience-entries">
+                    <!-- Experience entries will be added here -->
+                </div>
+                <button type="button" class="btn" onclick="addExperience()">Add Another Job</button>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(3)">Back</button>
+                    <button type="button" class="btn" onclick="nextStep(3)">Next: Skills</button>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section class="section form-step" id="skills-section" data-step="4">
+                <h2>Skills</h2>
+                <div class="form-group">
+                    <label for="skills">Skills (comma separated)</label>
+                    <textarea id="skills"
+                        placeholder="e.g., JavaScript, Python, Project Management, Team Leadership, Communication"></textarea>
+                </div>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(4)">Back</button>
+                    <button type="button" class="btn" onclick="nextStep(4)">Next: Style</button>
+                </div>
+            </section>
+
+            <!-- Template Selection -->
+            <section class="section form-step" id="template-section" data-step="5">
+                <h2>CV Style</h2>
+                <div class="form-group">
+                    <label for="template-select">Choose Template</label>
+                    <select id="template-select" onchange="changeTemplate()">
+                        <option value="modern">Modern Template</option>
+                        <option value="classic">Classic Template</option>
+                        <option value="professional">Professional Template</option>
+                    </select>
+                </div>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(5)">Back</button>
+                    <button type="button" class="btn" onclick="finishForm()">Finish & Preview</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Resume Preview Section -->
+        <section class="section" id="resume-preview">
+            <h2>Resume Preview</h2>
+            <div id="preview-content">
+                <div class="preview-header">
+                    <h1 id="preview-name">Your Name</h1>
+                    <p id="preview-title">Job Title</p>
+                    <p id="preview-contact">Email | Phone | Address</p>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Professional Summary</h3>
+                    <p id="preview-summary">Your professional summary appears here...</p>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Education</h3>
+                    <div id="preview-education">
+                        <p>Your education will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Work Experience</h3>
+                    <div id="preview-experience">
+                        <p>Your work experience will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Skills</h3>
+                    <div id="preview-skills">
+                        <p>Your skills will appear here...</p>
+                    </div>
+                </div>
+            </div>
+            <button id="export-pdf" class="btn">Export PDF</button>
+        </section>
+    </div>
+
+    <script>
+        // Resume data object
+        const resumeData = {
+            personalInfo: {},
+            education: [],
+            experience: [],
+            skills: [],
+            template: 'modern'
+        };
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add first education and experience entries by default
+            addEducation();
+            addExperience();
+
+            // Update preview when any input changes
+            document.querySelectorAll('input, textarea, select').forEach(element => {
+                element.addEventListener('input', updatePreview);
+            });
+        });
+
+        // Navigation functions
+        function nextStep(currentStep) {
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+            document.querySelector(`.form-step[data-step="${currentStep + 1}"]`).classList.add('active');
+            updateProgressBar(currentStep + 1);
+        }
+
+        function prevStep(currentStep) {
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+            document.querySelector(`.form-step[data-step="${currentStep - 1}"]`).classList.add('active');
+            updateProgressBar(currentStep - 1);
+        }
+
+        function finishForm() {
+            // You could add validation here before showing preview
+            updatePreview();
+        }
+
+        function updateProgressBar(step) {
+            document.querySelectorAll('.progress-step').forEach(stepEl => {
+                stepEl.classList.remove('active');
+                if (parseInt(stepEl.dataset.step) <= step) {
+                    stepEl.classList.add('active');
+                }
+            });
+        }
+
+        // Add new education entry
+        function addEducation() {
+            const educationEntries = document.getElementById('education-entries');
+            const educationId = Date.now();
+
+            educationEntries.innerHTML += `
+                <div class="education-entry" id="edu-${educationId}">
+                    <div class="form-group">
+                        <label for="degree-${educationId}">Degree/Certificate*</label>
+                        <input type="text" id="degree-${educationId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="institution-${educationId}">Institution*</label>
+                        <input type="text" id="institution-${educationId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eduStartDate-${educationId}">Start Date*</label>
+                        <input type="date" id="eduStartDate-${educationId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eduEndDate-${educationId}">End Date (or Current)</label>
+                        <input type="date" id="eduEndDate-${educationId}">
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="currentEducation-${educationId}" onchange="toggleCurrent('edu', '${educationId}')">
+                        <label for="currentEducation-${educationId}">Current Education</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="eduDescription-${educationId}">Description</label>
+                        <textarea id="eduDescription-${educationId}"></textarea>
+                    </div>
+                    <button type="button" class="btn remove-btn" onclick="removeEducation('${educationId}')">Remove</button>
+                    <hr>
+                </div>
+            `;
+        }
+
+        // Remove education entry
+        function removeEducation(id) {
+            document.getElementById(`edu-${id}`).remove();
+            updatePreview();
+        }
+
+        // Add new work experience entry
+        function addExperience() {
+            const experienceEntries = document.getElementById('experience-entries');
+            const experienceId = Date.now();
+
+            experienceEntries.innerHTML += `
+                <div class="experience-entry" id="exp-${experienceId}">
+                    <div class="form-group">
+                        <label for="jobTitle-${experienceId}">Job Title*</label>
+                        <input type="text" id="jobTitle-${experienceId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company-${experienceId}">Company*</label>
+                        <input type="text" id="company-${experienceId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expStartDate-${experienceId}">Start Date*</label>
+                        <input type="date" id="expStartDate-${experienceId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expEndDate-${experienceId}">End Date (or Current)</label>
+                        <input type="date" id="expEndDate-${experienceId}">
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="currentJob-${experienceId}" onchange="toggleCurrent('exp', '${experienceId}')">
+                        <label for="currentJob-${experienceId}">Current job</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="description-${experienceId}">Description</label>
+                        <textarea id="description-${experienceId}"></textarea>
+                    </div>
+                    <button type="button" class="btn remove-btn" onclick="removeExperience('${experienceId}')">Remove</button>
+                    <hr>
+                </div>
+            `;
+        }
+
+        // Remove experience entry
+        function removeExperience(id) {
+            document.getElementById(`exp-${id}`).remove();
+            updatePreview();
+        }
+
+        // Toggle current job/education
+        function toggleCurrent(type, id) {
+            const endDateField = type === 'edu'
+                ? document.getElementById(`eduEndDate-${id}`)
+                : document.getElementById(`expEndDate-${id}`);
+
+            const currentCheckbox = type === 'edu'
+                ? document.getElementById(`currentEducation-${id}`)
+                : document.getElementById(`currentJob-${id}`);
+
+            endDateField.disabled = currentCheckbox.checked;
+            updatePreview();
+        }
+
+        // Change template style
+        function changeTemplate() {
+            const template = document.getElementById('template-select').value;
+            resumeData.template = template;
+
+            // Remove all template classes
+            document.body.classList.remove(
+                'template-modern',
+                'template-classic',
+                'template-professional'
+            );
+
+            // Add selected template class
+            document.body.classList.add(`template-${template}`);
+        }
+
+        // Update resume preview
+        function updatePreview() {
+            // Update personal information
+            document.getElementById('preview-name').textContent = document.getElementById('fullName').value || 'Your Name';
+            document.getElementById('preview-title').textContent = document.getElementById('jobTitle').value || 'Job Title';
+
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            document.getElementById('preview-contact').textContent = [email, phone, address].filter(Boolean).join(' | ') || 'Contact Information';
+
+            document.getElementById('preview-summary').textContent = document.getElementById('summary').value || 'Professional summary appears here...';
+
+            // Update education
+            const educationEntries = document.querySelectorAll('.education-entry');
+            let educationHTML = '';
+
+            educationEntries.forEach(entry => {
+                const degree = entry.querySelector('input[type="text"]').value;
+                const institution = entry.querySelectorAll('input[type="text"]')[1].value;
+                const startDate = entry.querySelector('input[type="date"]').value;
+                const endDate = entry.querySelectorAll('input[type="date"]')[1].value;
+                const isCurrent = entry.querySelector('input[type="checkbox"]').checked;
+                const description = entry.querySelector('textarea').value;
+
+                if (degree || institution) {
+                    educationHTML += `
+                        <div class="preview-item">
+                            <h4>${degree || 'Degree'} from ${institution || 'Institution'}</h4>
+                            <p>${formatDate(startDate) || 'Start Date'} - ${isCurrent ? 'Present' : formatDate(endDate) || 'End Date'}</p>
+                            ${description ? `<p>${description}</p>` : ''}
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('preview-education').innerHTML = educationHTML || '<p>No education added</p>';
+
+            // Update work experience
+            const experienceEntries = document.querySelectorAll('.experience-entry');
+            let experienceHTML = '';
+
+            experienceEntries.forEach(entry => {
+                const jobTitle = entry.querySelector('input[type="text"]').value;
+                const company = entry.querySelectorAll('input[type="text"]')[1].value;
+                const startDate = entry.querySelector('input[type="date"]').value;
+                const endDate = entry.querySelectorAll('input[type="date"]')[1].value;
+                const isCurrent = entry.querySelector('input[type="checkbox"]').checked;
+                const description = entry.querySelector('textarea').value;
+
+                if (jobTitle || company) {
+                    experienceHTML += `
+                        <div class="preview-item">
+                            <h4>${jobTitle || 'Job Title'} at ${company || 'Company'}</h4>
+                            <p>${formatDate(startDate) || 'Start Date'} - ${isCurrent ? 'Present' : formatDate(endDate) || 'End Date'}</p>
+                            ${description ? `<p>${description}</p>` : ''}
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('preview-experience').innerHTML = experienceHTML || '<p>No work experience added</p>';
+
+            // Update skills
+            const skills = document.getElementById('skills').value;
+            if (skills) {
+                const skillsList = skills.split(',')
+                    .map(skill => `<li>${skill.trim()}</li>`)
+                    .join('');
+                document.getElementById('preview-skills').innerHTML = `<ul>${skillsList}</ul>`;
+            } else {
+                document.getElementById('preview-skills').innerHTML = '<p>No skills added</p>';
+            }
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            if (!dateString) return '';
+
+            const options = { year: 'numeric', month: 'short' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Export to PDF (placeholder - needs jsPDF library)
+        document.getElementById('export-pdf').addEventListener('click', function () {
+            alert('PDF export will be implemented with jsPDF library');
+            // Implementation would go here
+        });
+    </script>
+</body>
+
+</html>
