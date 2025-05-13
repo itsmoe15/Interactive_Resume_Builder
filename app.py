@@ -160,5 +160,17 @@ def cv_maker():
 def my_cvs():
     return render_template('my_cvs.html')
 
+@app.route('/preview-cv', methods=['POST'])
+@login_required
+def preview_cv():
+    data = request.form.to_dict(flat=False)
+    processed_data = {}
+    for key, value in data.items():
+        if key.endswith('[]'):
+            processed_data[key] = value
+        else:
+            processed_data[key] = value[0] if value else ""
+    return render_template('preview_cv.html', cv_data=processed_data)
+
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

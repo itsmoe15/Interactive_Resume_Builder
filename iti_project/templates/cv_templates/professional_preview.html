@@ -1,0 +1,72 @@
+<div class="cv-professional-preview">
+    <div class="header bg-dark text-white p-4 mb-4">
+        <h1 class="fw-bold mb-1">{{ cv_data.fullName }}</h1>
+        <p class="fs-5 mb-3 text-light">{{ cv_data.jobTitle }}</p>
+        <p class="text-light">
+            {{ cv_data.email }} | {{ cv_data.phone }}
+            {% if cv_data.address %}
+                | {{ cv_data.address }}
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="content px-4">
+        <div class="summary mb-4">
+            <h3 class="fw-bold text-dark border-bottom border-dark pb-2 mb-3">Professional Summary</h3>
+            <p>{{ cv_data.summary }}</p>
+        </div>
+
+        <div class="experience mb-4">
+            <h3 class="fw-bold text-dark border-bottom border-dark pb-2 mb-3">Experience</h3>
+            {% if cv_data.get('workTitle[]') %}
+                {% for i in range(cv_data.get('workTitle[]')|length) %}
+                    <div class="mb-4">
+                        <h4 class="fw-bold text-dark mb-1">{{ cv_data.get('workTitle[]')[i] }}</h4>
+                        <h5 class="mb-1">{{ cv_data.get('workCompany[]')[i] }}</h5>
+                        <p class="text-muted fst-italic mb-2">
+                            {{ cv_data.get('workStartDate[]')[i] }} – 
+                            {% if cv_data.get('workEndDate[]') and cv_data.get('workEndDate[]')[i] %}
+                                {{ cv_data.get('workEndDate[]')[i] }}
+                            {% else %}
+                                Present
+                            {% endif %}
+                        </p>
+                        <p>{{ cv_data.get('workDescription[]')[i] }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="education mb-4">
+            <h3 class="fw-bold text-dark border-bottom border-dark pb-2 mb-3">Education</h3>
+            {% if cv_data.get('educationDegree[]') %}
+                {% for i in range(cv_data.get('educationDegree[]')|length) %}
+                    <div class="mb-4">
+                        <h4 class="fw-bold text-dark mb-1">{{ cv_data.get('educationDegree[]')[i] }}</h4>
+                        <h5 class="mb-1">{{ cv_data.get('educationInstitution[]')[i] }}</h5>
+                        <p class="text-muted fst-italic mb-2">
+                            {{ cv_data.get('educationStartDate[]')[i] }} – 
+                            {% if cv_data.get('educationEndDate[]') and cv_data.get('educationEndDate[]')[i] %}
+                                {{ cv_data.get('educationEndDate[]')[i] }}
+                            {% else %}
+                                Present
+                            {% endif %}
+                        </p>
+                        {% if cv_data.get('educationDescription[]') and cv_data.get('educationDescription[]')[i] %}
+                            <p>{{ cv_data.get('educationDescription[]')[i] }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="skills mb-4">
+            <h3 class="fw-bold text-dark border-bottom border-dark pb-2 mb-3">Skills</h3>
+            <div>
+                {% for skill in cv_data.skills.split(',') %}
+                    <span class="d-inline-block bg-light py-1 px-3 me-2 mb-2 border-start border-3 border-dark">{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div> 
