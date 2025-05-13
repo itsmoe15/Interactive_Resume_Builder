@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ cv_data.fullName }} - CV</title>
+    <style>
+        /* Common Styles for all templates */
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Include specific template styles based on selection */
+        {% if cv_data.template == 'modern' %}
+            /* Modern Template Styles */
+            body {
+                font-family: 'Roboto', 'Helvetica', sans-serif;
+                color: #2c3e50;
+                background-color: #ffffff;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 3px solid #3498db;
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+            .profile-name {
+                font-size: 2.5em;
+                font-weight: 700;
+                color: #3498db;
+                margin: 0;
+            }
+            .job-title {
+                font-size: 1.3em;
+                font-weight: 400;
+                color: #7f8c8d;
+                margin: 5px 0 0;
+            }
+            .contact-info {
+                text-align: right;
+                font-size: 0.9em;
+            }
+            .section-title {
+                font-size: 1.4em;
+                font-weight: 600;
+                color: #3498db;
+                margin: 25px 0 15px;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 5px;
+            }
+            .summary {
+                margin-bottom: 25px;
+                font-size: 1em;
+                line-height: 1.6;
+            }
+            .experience-item, .education-item {
+                margin-bottom: 20px;
+            }
+            .item-title {
+                font-weight: 600;
+                margin-bottom: 3px;
+                color: #2c3e50;
+            }
+            .item-subtitle {
+                font-weight: 400;
+                color: #3498db;
+                margin: 0 0 5px;
+            }
+            .item-date {
+                font-style: italic;
+                color: #7f8c8d;
+                margin: 0 0 8px;
+                font-size: 0.9em;
+            }
+            .item-description {
+                font-size: 0.95em;
+                margin: 8px 0;
+            }
+            .skills-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            .skill-item {
+                background-color: #e8f4fc;
+                color: #3498db;
+                padding: 5px 12px;
+                border-radius: 15px;
+                font-size: 0.9em;
+            }
+        {% elif cv_data.template == 'classic' %}
+            /* Classic Template Styles */
+            body {
+                font-family: 'Times New Roman', serif;
+                color: #222;
+                background-color: #ffffff;
+            }
+            .header {
+                text-align: center;
+                border-bottom: 1px solid #777;
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+            .profile-name {
+                font-size: 2.2em;
+                font-weight: 700;
+                margin: 0;
+                text-transform: uppercase;
+            }
+            .job-title {
+                font-size: 1.2em;
+                font-weight: 400;
+                margin: 5px 0 15px;
+            }
+            .contact-info {
+                font-size: 0.9em;
+                margin-top: 10px;
+            }
+            .section-title {
+                font-size: 1.3em;
+                font-weight: 600;
+                margin: 25px 0 15px;
+                text-transform: uppercase;
+                border-bottom: 1px solid #777;
+                padding-bottom: 5px;
+            }
+            .summary {
+                margin-bottom: 25px;
+                font-size: 1em;
+                line-height: 1.5;
+            }
+            .experience-item, .education-item {
+                margin-bottom: 20px;
+            }
+            .item-title {
+                font-weight: 600;
+                margin-bottom: 3px;
+            }
+            .item-subtitle {
+                font-weight: 400;
+                font-style: italic;
+                margin: 0 0 5px;
+            }
+            .item-date {
+                font-style: normal;
+                margin: 0 0 8px;
+                font-size: 0.9em;
+            }
+            .item-description {
+                font-size: 0.95em;
+                margin: 8px 0;
+            }
+            .skills-list {
+                column-count: 2;
+                margin: 0;
+                padding: 0 0 0 20px;
+            }
+            .skill-item {
+                margin-bottom: 5px;
+            }
+        {% else %}
+            /* Professional Template Styles */
+            body {
+                font-family: 'Arial', sans-serif;
+                color: #333;
+                background-color: #ffffff;
+            }
+            .header {
+                background-color: #2c3e50;
+                color: white;
+                padding: 25px;
+                margin-bottom: 25px;
+            }
+            .profile-name {
+                font-size: 2.2em;
+                font-weight: 700;
+                margin: 0;
+                color: white;
+            }
+            .job-title {
+                font-size: 1.2em;
+                font-weight: 400;
+                margin: 5px 0 15px;
+                color: #ecf0f1;
+            }
+            .contact-info {
+                font-size: 0.9em;
+                color: #ecf0f1;
+            }
+            .container {
+                padding: 0;
+            }
+            .content {
+                padding: 0 25px;
+            }
+            .section-title {
+                font-size: 1.3em;
+                font-weight: 600;
+                margin: 25px 0 15px;
+                color: #2c3e50;
+                border-bottom: 2px solid #2c3e50;
+                padding-bottom: 5px;
+            }
+            .summary {
+                margin-bottom: 25px;
+                font-size: 1em;
+                line-height: 1.6;
+            }
+            .experience-item, .education-item {
+                margin-bottom: 20px;
+            }
+            .item-title {
+                font-weight: 600;
+                margin-bottom: 3px;
+                color: #2c3e50;
+            }
+            .item-subtitle {
+                font-weight: 400;
+                color: #555;
+                margin: 0 0 5px;
+            }
+            .item-date {
+                font-style: italic;
+                color: #777;
+                margin: 0 0 8px;
+                font-size: 0.9em;
+            }
+            .item-description {
+                font-size: 0.95em;
+                margin: 8px 0;
+            }
+            .skills-list {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            .skill-item {
+                display: inline-block;
+                margin: 0 15px 8px 0;
+                background-color: #f5f5f5;
+                padding: 4px 10px;
+                border-radius: 3px;
+                border-left: 3px solid #2c3e50;
+                font-size: 0.9em;
+            }
+        {% endif %}
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if cv_data.template == 'modern' %}
+            <!-- Modern Template Layout -->
+            <div class="header">
+                <div>
+                    <h1 class="profile-name">{{ cv_data.fullName }}</h1>
+                    <p class="job-title">{{ cv_data.jobTitle }}</p>
+                </div>
+                <div class="contact-info">
+                    <p>{{ cv_data.email }}</p>
+                    <p>{{ cv_data.phone }}</p>
+                    {% if cv_data.address %}
+                        <p>{{ cv_data.address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="summary">
+                <h2 class="section-title">Professional Summary</h2>
+                <p>{{ cv_data.summary }}</p>
+            </div>
+            <div class="experience">
+                <h2 class="section-title">Work Experience</h2>
+                {% if cv_data.get('workTitle[]') %}
+                    {% for i in range(cv_data.get('workTitle[]')|length) %}
+                        <div class="experience-item">
+                            <h3 class="item-title">{{ cv_data.get('workTitle[]')[i] }}</h3>
+                            <p class="item-subtitle">{{ cv_data.get('workCompany[]')[i] }}</p>
+                            <p class="item-date">
+                                {{ cv_data.get('workStartDate[]')[i] }} – 
+                                {% if cv_data.get('workEndDate[]') and cv_data.get('workEndDate[]')[i] %}
+                                    {{ cv_data.get('workEndDate[]')[i] }}
+                                {% else %}
+                                    Present
+                                {% endif %}
+                            </p>
+                            <p class="item-description">{{ cv_data.get('workDescription[]')[i] }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="education">
+                <h2 class="section-title">Education</h2>
+                {% if cv_data.get('educationDegree[]') %}
+                    {% for i in range(cv_data.get('educationDegree[]')|length) %}
+                        <div class="education-item">
+                            <h3 class="item-title">{{ cv_data.get('educationDegree[]')[i] }}</h3>
+                            <p class="item-subtitle">{{ cv_data.get('educationInstitution[]')[i] }}</p>
+                            <p class="item-date">
+                                {{ cv_data.get('educationStartDate[]')[i] }} – 
+                                {% if cv_data.get('educationEndDate[]') and cv_data.get('educationEndDate[]')[i] %}
+                                    {{ cv_data.get('educationEndDate[]')[i] }}
+                                {% else %}
+                                    Present
+                                {% endif %}
+                            </p>
+                            {% if cv_data.get('educationDescription[]') and cv_data.get('educationDescription[]')[i] %}
+                                <p class="item-description">{{ cv_data.get('educationDescription[]')[i] }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="skills">
+                <h2 class="section-title">Skills</h2>
+                <ul class="skills-list">
+                    {% for skill in cv_data.skills.split(',') %}
+                        <li class="skill-item">{{ skill.strip() }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% elif cv_data.template == 'classic' %}
+            <!-- Classic Template Layout -->
+            <div class="header">
+                <h1 class="profile-name">{{ cv_data.fullName }}</h1>
+                <p class="job-title">{{ cv_data.jobTitle }}</p>
+                <div class="contact-info">
+                    {{ cv_data.email }} | {{ cv_data.phone }}
+                    {% if cv_data.address %}
+                        | {{ cv_data.address }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="summary">
+                <h2 class="section-title">Professional Summary</h2>
+                <p>{{ cv_data.summary }}</p>
+            </div>
+            <div class="experience">
+                <h2 class="section-title">Experience</h2>
+                {% if cv_data.get('workTitle[]') %}
+                    {% for i in range(cv_data.get('workTitle[]')|length) %}
+                        <div class="experience-item">
+                            <h3 class="item-title">{{ cv_data.get('workTitle[]')[i] }}</h3>
+                            <p class="item-subtitle">{{ cv_data.get('workCompany[]')[i] }}</p>
+                            <p class="item-date">
+                                {{ cv_data.get('workStartDate[]')[i] }} – 
+                                {% if cv_data.get('workEndDate[]') and cv_data.get('workEndDate[]')[i] %}
+                                    {{ cv_data.get('workEndDate[]')[i] }}
+                                {% else %}
+                                    Present
+                                {% endif %}
+                            </p>
+                            <p class="item-description">{{ cv_data.get('workDescription[]')[i] }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="education">
+                <h2 class="section-title">Education</h2>
+                {% if cv_data.get('educationDegree[]') %}
+                    {% for i in range(cv_data.get('educationDegree[]')|length) %}
+                        <div class="education-item">
+                            <h3 class="item-title">{{ cv_data.get('educationDegree[]')[i] }}</h3>
+                            <p class="item-subtitle">{{ cv_data.get('educationInstitution[]')[i] }}</p>
+                            <p class="item-date">
+                                {{ cv_data.get('educationStartDate[]')[i] }} – 
+                                {% if cv_data.get('educationEndDate[]') and cv_data.get('educationEndDate[]')[i] %}
+                                    {{ cv_data.get('educationEndDate[]')[i] }}
+                                {% else %}
+                                    Present
+                                {% endif %}
+                            </p>
+                            {% if cv_data.get('educationDescription[]') and cv_data.get('educationDescription[]')[i] %}
+                                <p class="item-description">{{ cv_data.get('educationDescription[]')[i] }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="skills">
+                <h2 class="section-title">Skills</h2>
+                <ul class="skills-list">
+                    {% for skill in cv_data.skills.split(',') %}
+                        <li class="skill-item">{{ skill.strip() }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <!-- Professional Template Layout -->
+            <div class="header">
+                <h1 class="profile-name">{{ cv_data.fullName }}</h1>
+                <p class="job-title">{{ cv_data.jobTitle }}</p>
+                <div class="contact-info">
+                    <p>{{ cv_data.email }} | {{ cv_data.phone }}
+                    {% if cv_data.address %}
+                        | {{ cv_data.address }}
+                    {% endif %}</p>
+                </div>
+            </div>
+            <div class="content">
+                <div class="summary">
+                    <h2 class="section-title">Professional Summary</h2>
+                    <p>{{ cv_data.summary }}</p>
+                </div>
+                <div class="experience">
+                    <h2 class="section-title">Experience</h2>
+                    {% if cv_data.get('workTitle[]') %}
+                        {% for i in range(cv_data.get('workTitle[]')|length) %}
+                            <div class="experience-item">
+                                <h3 class="item-title">{{ cv_data.get('workTitle[]')[i] }}</h3>
+                                <p class="item-subtitle">{{ cv_data.get('workCompany[]')[i] }}</p>
+                                <p class="item-date">
+                                    {{ cv_data.get('workStartDate[]')[i] }} – 
+                                    {% if cv_data.get('workEndDate[]') and cv_data.get('workEndDate[]')[i] %}
+                                        {{ cv_data.get('workEndDate[]')[i] }}
+                                    {% else %}
+                                        Present
+                                    {% endif %}
+                                </p>
+                                <p class="item-description">{{ cv_data.get('workDescription[]')[i] }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="education">
+                    <h2 class="section-title">Education</h2>
+                    {% if cv_data.get('educationDegree[]') %}
+                        {% for i in range(cv_data.get('educationDegree[]')|length) %}
+                            <div class="education-item">
+                                <h3 class="item-title">{{ cv_data.get('educationDegree[]')[i] }}</h3>
+                                <p class="item-subtitle">{{ cv_data.get('educationInstitution[]')[i] }}</p>
+                                <p class="item-date">
+                                    {{ cv_data.get('educationStartDate[]')[i] }} – 
+                                    {% if cv_data.get('educationEndDate[]') and cv_data.get('educationEndDate[]')[i] %}
+                                        {{ cv_data.get('educationEndDate[]')[i] }}
+                                    {% else %}
+                                        Present
+                                    {% endif %}
+                                </p>
+                                {% if cv_data.get('educationDescription[]') and cv_data.get('educationDescription[]')[i] %}
+                                    <p class="item-description">{{ cv_data.get('educationDescription[]')[i] }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="skills">
+                    <h2 class="section-title">Skills</h2>
+                    <ul class="skills-list">
+                        {% for skill in cv_data.skills.split(',') %}
+                            <li class="skill-item">{{ skill.strip() }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html> 

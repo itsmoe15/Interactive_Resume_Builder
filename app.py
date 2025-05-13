@@ -1,9 +1,16 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, send_from_directory
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, send_from_directory, make_response
 from flask_login import LoginManager, login_user, login_required, logout_user
 import bcrypt
 import os
 from werkzeug.utils import secure_filename
 import base64
+from io import BytesIO
+import tempfile
+from xhtml2pdf import pisa
+from pypdf import PdfReader, PdfWriter
+import pdfkit
+from datetime import datetime
+
 
 from app import create_app
 from app.models.user import db, User
@@ -171,6 +178,81 @@ def preview_cv():
         else:
             processed_data[key] = value[0] if value else ""
     return render_template('preview_cv.html', cv_data=processed_data)
+
+@app.route('/generate-pdf', methods=['POST'])
+@login_required
+def generate_pdf():
+    # Find wkhtmltopdf path (common Windows locations)
+    possible_paths = [
+        r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
+        r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
+        r'C:\wkhtmltopdf\bin\wkhtmltopdf.exe',
+    ]
+    wkhtmltopdf_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            wkhtmltopdf_path = path
+            break
+    if not wkhtmltopdf_path:
+        try:
+            import subprocess
+            path = subprocess.check_output(['where', 'wkhtmltopdf'], shell=True).decode('utf-8').strip()
+            if path and os.path.exists(path):
+                wkhtmltopdf_path = path
+        except:
+            pass
+    if not wkhtmltopdf_path:
+        return """
+            <h2>wkhtmltopdf not found</h2>
+            <p>Please download and install wkhtmltopdf from: 
+            <a href='https://wkhtmltopdf.org/downloads.html'>https://wkhtmltopdf.org/downloads.html</a></p>
+            <p>After installation, restart this application.</p>
+            <p><a href="/preview-cv" onclick="window.history.back(); return false;">Go back</a></p>
+        """, 500
+
+    config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
+
+    data = request.form.to_dict(flat=False)
+    processed_data = {}
+    for key, value in data.items():
+        if key.endswith('[]'):
+            processed_data[key] = value
+        else:
+            processed_data[key] = value[0] if value else ""
+
+    html = render_template('cv_template.html', cv_data=processed_data)
+
+    with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as f:
+        f.write(html.encode('utf-8'))
+        html_file_path = f.name
+
+    options = {
+        'page-size': 'A4',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': 'UTF-8',
+        'no-outline': None
+    }
+
+    try:
+        pdf_data = pdfkit.from_file(html_file_path, False, options=options, configuration=config)
+        os.unlink(html_file_path)
+        filename = f"CV_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        response = make_response(pdf_data)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+    except Exception as e:
+        os.unlink(html_file_path)
+        error_message = f"<h2>PDF generation failed:</h2>"
+        error_message += f"<p>{str(e)}</p>"
+        error_message += f"<p>The application looked for wkhtmltopdf at: {wkhtmltopdf_path}</p>"
+        error_message += f"<p>If wkhtmltopdf is installed elsewhere, please check the path.</p>"
+        error_message += f"<p>Download wkhtmltopdf from: <a href='https://wkhtmltopdf.org/downloads.html'>https://wkhtmltopdf.org/downloads.html</a></p>"
+        error_message += f"<p><a href='#' onclick='window.history.back(); return false;'>Go back</a></p>"
+        return error_message, 500
 
 if __name__ == '__main__':
     app.run(debug=True)
