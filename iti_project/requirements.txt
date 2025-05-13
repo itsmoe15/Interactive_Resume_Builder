@@ -1,4 +1,0 @@
-Flask==2.0.1
-pdfkit==1.0.0
-Flask-WTF==0.15.1
-Werkzeug==2.0.1 
