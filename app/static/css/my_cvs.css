@@ -1,0 +1,57 @@
+@import 'colors.css';
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: var(--primary);
+    margin-bottom: 30px;
+}
+
+.templates-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.template-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.template-button {
+    background-color: var(--primary);
+    color: var(--text-dark);
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.template-button:hover {
+    transform: scale(1.05);
+}
+
+.template-image {
+    width: 210px;
+    height: 297px;
+    object-fit: cover;
+    border-radius: 5px;
+    background-color: var(--bg-light);
+    border: 2px solid var(--primary);
+}
+
+.cv-info {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--text-secondary);
+} 

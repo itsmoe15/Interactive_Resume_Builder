@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Login - CV Maker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4" style="color: var(--primary);">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </h2>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-custom w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+                    </form>
+                    <p class="text-center mt-3">
+                        Don't have an account? 
+                        <a href="{{ url_for('register') }}" style="color: var(--primary);">Register here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-custom {
+    background: linear-gradient(to bottom, var(--primary), var(--primary-light));
+    color: var(--text-dark);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background: linear-gradient(to bottom, var(--primary-light), var(--primary-lighter));
+    color: var(--text-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-primary);
+}
+
+.form-control {
+    background-color: var(--bg-darker);
+    border: 1px solid var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.form-control:focus {
+    background-color: var(--bg-darker);
+    border-color: var(--primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.25rem var(--shadow-primary);
+}
+
+.card {
+    background: linear-gradient(145deg, var(--bg-darker), var(--bg-light));
+    border: 1px solid var(--border-secondary);
+}
+</style>
+{% endblock %} 

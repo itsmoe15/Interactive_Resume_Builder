@@ -1,0 +1,28 @@
+:root {
+    /* Primary Colors */
+    --primary: #26FFED;
+    --primary-light: #54FFF1;
+    --primary-lighter: #84FFF5;
+
+    /* Background Colors */
+    --bg-dark: #191919;
+    --bg-darker: #1a1a1a;
+    --bg-darkest: #151515;
+    --bg-light: #212121;
+    --bg-lighter: #1f1f1f;
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-dark: #1a1a1a;
+
+    /* Border Colors */
+    --border-primary: #26FFED;
+    --border-secondary: #333333;
+
+    /* Shadow Colors */
+    --shadow-primary: rgba(38, 255, 237, 0.2);
+    --shadow-primary-glow: rgba(38, 255, 237, 0.5);
+    --shadow-dark: rgba(0, 0, 0, 0.1);
+    --shadow-darker: rgba(0, 0, 0, 0.15);
+} 

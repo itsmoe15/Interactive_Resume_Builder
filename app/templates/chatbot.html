@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}AI Assistant - CV Maker{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        overflow: hidden;
+        font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+        background: linear-gradient(135deg, #181c1f 0%, #23272b 100%);
+        color: #eafffa;
+    }
+    .chat-container {
+        height: 100vh;
+        background: none;
+    }
+    .chat-header {
+        color: #26ffed;
+        text-shadow: 0 2px 12px #26ffed44;
+        font-weight: 700;
+        letter-spacing: 1px;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    .chat-messages {
+        max-height: calc(100vh - 220px);
+        overflow-y: auto;
+        background: rgba(30, 36, 40, 0.85);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 #26ffed22;
+        padding: 2rem 1.5rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(6px);
+    }
+    .message {
+        margin-bottom: 1.2rem;
+        padding: 1rem 1.5rem;
+        border-radius: 1.2rem;
+        max-width: 80%;
+        position: relative;
+        font-size: 1.08rem;
+        line-height: 1.6;
+        word-break: break-word;
+        box-shadow: 0 2px 8px #26ffed22;
+        font-family: inherit;
+    }
+    .user-message {
+        background: linear-gradient(90deg, #26ffed 60%, #54fff1 100%);
+        color: #181c1f;
+        margin-left: auto;
+        border-bottom-right-radius: 0.4rem;
+        font-weight: 600;
+        box-shadow: 0 2px 12px #26ffed44;
+    }
+    .bot-message {
+        background: rgba(36, 44, 50, 0.95);
+        color: #eafffa;
+        margin-right: auto;
+        border-bottom-left-radius: 0.4rem;
+        border: 1.5px solid #26ffed33;
+        font-weight: 400;
+    }
+    .message::after {
+        display: none;
+    }
+    .chat-input {
+        margin-top: 0.5rem;
+    }
+    .chat-input input {
+        background: rgba(30, 36, 40, 0.95) !important;
+        color: #fff !important;
+        border: 2px solid #26ffed55;
+        border-radius: 30px;
+        padding: 14px 22px;
+        font-size: 1.08rem;
+        font-family: inherit;
+        transition: border 0.2s, box-shadow 0.2s;
+    }
+    .chat-input input:focus {
+        background: rgba(30, 36, 40, 0.95) !important;
+        color: #fff !important;
+        border-color: #26ffed;
+        box-shadow: 0 0 0 0.18rem #26ffed55;
+        outline: none;
+    }
+    .chat-input button {
+        background: linear-gradient(90deg, #26ffed 60%, #54fff1 100%);
+        border: none;
+        border-radius: 30px;
+        padding: 14px 28px;
+        color: #181c1f;
+        font-weight: 700;
+        font-size: 1.08rem;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px #26ffed33;
+    }
+    .chat-input button:hover {
+        background: linear-gradient(90deg, #54fff1 60%, #26ffed 100%);
+        transform: translateY(-2px) scale(1.04);
+        box-shadow: 0 6px 16px #26ffed55;
+    }
+    .cv-preview {
+        background: rgba(30, 36, 40, 0.85);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 #26ffed22;
+        padding: 2rem 1.5rem;
+        height: 100%;
+        backdrop-filter: blur(6px);
+        display: flex;
+        flex-direction: column;
+    }
+    .cv-preview-header {
+        color: #26ffed;
+        text-shadow: 0 2px 12px #26ffed44;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    .cv-preview-content {
+        background: rgba(36, 44, 50, 0.95);
+        border-radius: 15px;
+        box-shadow: 0 4px 16px #26ffed22;
+        padding: 1.5rem;
+        min-height: 300px;
+        color: #eafffa;
+        font-family: inherit;
+        font-size: 1.05rem;
+        overflow-y: auto;
+    }
+    .btn, .btn-outline-primary {
+        font-family: inherit;
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 10px 24px;
+        font-size: 1.08rem;
+        border: 2px solid #26ffed;
+        background: transparent;
+        color: #26ffed;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px #26ffed22;
+    }
+    .btn:hover, .btn-outline-primary:hover {
+        background: linear-gradient(90deg, #26ffed 60%, #54fff1 100%);
+        color: #181c1f;
+        border-color: #54fff1;
+        box-shadow: 0 6px 16px #26ffed55;
+        transform: translateY(-2px) scale(1.04);
+    }
+    /* Custom scrollbar */
+    .chat-messages::-webkit-scrollbar,
+    .cv-preview-content::-webkit-scrollbar {
+        width: 7px;
+    }
+    .chat-messages::-webkit-scrollbar-track,
+    .cv-preview-content::-webkit-scrollbar-track {
+        background: #23272b;
+        border-radius: 10px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb,
+    .cv-preview-content::-webkit-scrollbar-thumb {
+        background: #26ffed;
+        border-radius: 10px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb:hover,
+    .cv-preview-content::-webkit-scrollbar-thumb:hover {
+        background: #54fff1;
+    }
+    @media (max-width: 900px) {
+        .chat-header, .cv-preview-header {
+            font-size: 1.1rem;
+        }
+        .chat-messages, .cv-preview {
+            padding: 1rem 0.5rem;
+        }
+        .cv-preview-content {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0 chat-container">
+    <div class="row g-0" style="height: 100vh;">
+        <!-- Chat Interface -->
+        <div class="col-md-6 p-4 d-flex flex-column">
+            <div class="chat-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>CV Builder Assistant
+                    </h3>
+                    <a href="{{ url_for('home') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>Home
+                    </a>
+                </div>
+            </div>
+            <div class="chat-messages flex-grow-1 mb-4" id="chatMessages">
+                <!-- Messages will be added here dynamically -->
+            </div>
+            <div class="chat-input">
+                <form id="chatForm" class="d-flex gap-2">
+                    <input type="text" id="userInput" class="form-control" placeholder="Type your message...">
+                    <button type="submit" class="btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CV Preview -->
+        <div class="col-md-6 p-4">
+            <div class="cv-preview h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0 cv-preview-header">
+                        <i class="fas fa-file-alt me-2"></i>CV Preview
+                    </h3>
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-download me-2"></i>Download CV
+                    </button>
+                </div>
+                <div id="cvPreview" class="cv-preview-content p-4 h-100">
+                    <!-- CV content will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('chatForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const userInput = document.getElementById('userInput');
+    const message = userInput.value.trim();
+    
+    if (message) {
+        // Add user message to chat
+        addMessage(message, 'user');
+        userInput.value = '';
+
+        try {
+            // Send message to backend
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            
+            // Add bot response to chat
+            addMessage(data.response, 'bot');
+            
+            // Update CV preview if provided
+            if (data.cv_update) {
+                updateCVPreview(data.cv_update);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            addMessage('Sorry, there was an error processing your request.', 'bot');
+        }
+    }
+});
+
+function addMessage(text, sender) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    messageDiv.textContent = text;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function updateCVPreview(cvData) {
+    const previewDiv = document.getElementById('cvPreview');
+    previewDiv.innerHTML = cvData;
+}
+</script>
+{% endblock %} 

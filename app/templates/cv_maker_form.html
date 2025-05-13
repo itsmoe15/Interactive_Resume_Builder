@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume Builder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cv_maker.css') }}">
+</head>
+<body class="template-modern">
+    <div class="container">
+        <header>
+            <h1>Interactive Resume Builder</h1>
+            <!-- Progress Bar: Arrow Steps -->
+            <div class="arrow-steps clearfix" id="cv-progress-bar">
+                <div class="step current" data-step="1"> <span>Personal</span> </div>
+                <div class="step" data-step="2"> <span>Education</span> </div>
+                <div class="step" data-step="3"> <span>Experience</span> </div>
+                <div class="step" data-step="4"> <span>Skills</span> </div>
+                <div class="step" data-step="5"> <span>Style</span> </div>
+            </div>
+        </header>
+
+        <main id="form-sections">
+            <!-- Personal Information Section -->
+            <section class="section form-step active" id="personal-section" data-step="1">
+                <h2>Personal Information</h2>
+                <form id="personal-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Name*</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title*</label>
+                        <input type="text" id="jobTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email*</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address">
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">Professional Summary</label>
+                        <textarea id="summary"></textarea>
+                    </div>
+                    <div class="nav-buttons">
+                        <button type="button" class="btn" onclick="nextStep(1)">Next: Education</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Education Section -->
+            <section class="section form-step" id="education-section" data-step="2">
+                <h2>Education</h2>
+                <div id="education-entries">
+                    <!-- Education entries will be added here -->
+                </div>
+                <button type="button" class="btn" onclick="addEducation()">+ Add Another Education</button>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(2)">Back</button>
+                    <button type="button" class="btn" onclick="nextStep(2)">Next: Experience</button>
+                </div>
+            </section>
+
+            <!-- Work Experience Section -->
+            <section class="section form-step" id="experience-section" data-step="3">
+                <h2>Work Experience</h2>
+                <div id="experience-entries">
+                    <!-- Experience entries will be added here -->
+                </div>
+                <button type="button" class="btn" onclick="addExperience()">Add Another Job</button>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(3)">Back</button>
+                    <button type="button" class="btn" onclick="nextStep(3)">Next: Skills</button>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section class="section form-step" id="skills-section" data-step="4">
+                <h2>Skills</h2>
+                <div class="form-group">
+                    <label for="skills">Skills (comma separated)</label>
+                    <textarea id="skills"
+                        placeholder="e.g., JavaScript, Python, Project Management, Team Leadership, Communication"></textarea>
+                </div>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(4)">Back</button>
+                    <button type="button" class="btn" onclick="nextStep(4)">Next: Style</button>
+                </div>
+            </section>
+
+            <!-- Template Selection -->
+            <section class="section form-step" id="template-section" data-step="5">
+                <h2>CV Style</h2>
+                <div class="form-group">
+                    <label for="template-select">Choose Template</label>
+                    <select id="template-select" onchange="changeTemplate()">
+                        <option value="modern">Modern Template</option>
+                        <option value="classic">Classic Template</option>
+                        <option value="professional">Professional Template</option>
+                    </select>
+                </div>
+                <div class="nav-buttons">
+                    <button type="button" class="btn secondary-btn" onclick="prevStep(5)">Back</button>
+                    <button type="button" class="btn" onclick="finishForm()">Finish & Preview</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Resume Preview Section -->
+        <section class="section" id="resume-preview">
+            <h2>Resume Preview</h2>
+            <div id="preview-content">
+                <div class="preview-header">
+                    <h1 id="preview-name">Your Name</h1>
+                    <p id="preview-title">Job Title</p>
+                    <p id="preview-contact">Email | Phone | Address</p>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Professional Summary</h3>
+                    <p id="preview-summary">Your professional summary appears here...</p>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Education</h3>
+                    <div id="preview-education">
+                        <p>Your education will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Work Experience</h3>
+                    <div id="preview-experience">
+                        <p>Your work experience will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Skills</h3>
+                    <div id="preview-skills">
+                        <p>Your skills will appear here...</p>
+                    </div>
+                </div>
+            </div>
+            <button id="export-pdf" class="btn">Export PDF</button>
+        </section>
+    </div>
+    <script src="{{ url_for('static', filename='js/cv_maker.js') }}"></script>
+</body>
+
+</html>

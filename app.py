@@ -1,22 +1,20 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, send_from_directory
 from flask_login import LoginManager, login_user, login_required, logout_user
 import bcrypt
 import os
 from werkzeug.utils import secure_filename
 import base64
 
-from app.config.config import Config
+from app import create_app
 from app.models.user import db, User
 from app.services.ats_service import analyze_cv
 
-app = Flask(__name__)
-app.config.from_object(Config)
+app = create_app()
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Initialize extensions
-db.init_app(app)
+# Initialize login manager
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -94,6 +92,11 @@ def chat():
 def ats_checker():
     return render_template('ats_checker.html')
 
+@app.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 @app.route('/check-ats', methods=['POST'])
 @login_required
 def check_ats():
@@ -127,23 +130,35 @@ def check_ats():
         # Analyze CV using our service
         analysis_result = analyze_cv(base64_content)
         
-        # Clean up the temporary file
-        os.remove(filepath)
+        # Do NOT delete the file!
+        # os.remove(filepath)
         
-        # Return the analysis result
+        # Return the analysis result and file URL
+        file_url = url_for('uploaded_file', filename=filename)
+        analysis_result['file_url'] = file_url
         return jsonify(analysis_result)
     
     except ValueError as e:
         # Clean up the temporary file
-        if os.path.exists(filepath):
-            os.remove(filepath)
+        # if os.path.exists(filepath):
+        #     os.remove(filepath)
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         # Clean up the temporary file
-        if os.path.exists(filepath):
-            os.remove(filepath)
+        # if os.path.exists(filepath):
+        #     os.remove(filepath)
         app.logger.error(f"Error in check_ats: {str(e)}")
         return jsonify({'error': 'An error occurred while analyzing your CV. Please try again.'}), 500
+
+@app.route('/cv-maker')
+@login_required
+def cv_maker():
+    return render_template('cv_maker_form.html')
+
+@app.route('/my-cvs')
+@login_required
+def my_cvs():
+    return render_template('my_cvs.html')
 
 if __name__ == '__main__':
     app.run(debug=False)
