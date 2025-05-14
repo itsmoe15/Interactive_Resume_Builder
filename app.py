@@ -11,7 +11,6 @@ from pypdf import PdfReader, PdfWriter
 import pdfkit
 from datetime import datetime
 
-
 from app import create_app
 from app.models.user import db, User
 from app.services.ats_service import analyze_cv

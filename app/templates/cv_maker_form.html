@@ -6,37 +6,47 @@
     <title>Create Your CV - CV Builder</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: var(--bg-darkest); color: var(--text-primary); }
+        .form-label, .form-check-label { color: var(--text-primary); }
+        .card { background: var(--bg-dark); border: 1px solid var(--border-secondary); }
+        .card-header { background: linear-gradient(90deg, var(--primary), var(--primary-light)); color: var(--bg-darkest); }
+        .btn-primary, .btn-outline-success { background: var(--primary); color: var(--bg-darkest); border: none; }
+        .btn-primary:hover, .btn-outline-success:hover { background: var(--primary-light); color: var(--bg-darkest); }
+        .form-control, .form-select, textarea { background: var(--bg-lighter); color: var(--text-primary); border: 1px solid var(--border-secondary); }
+        .form-control:focus, .form-select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+        .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+        .form-check-label .card { background: var(--bg-lighter); color: var(--text-primary); border: 2px solid var(--border-secondary); }
+        .form-check-input:checked + .form-check-label .card { border-color: var(--primary); box-shadow: 0 0 0 0.25rem var(--primary-light); }
+    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<body class="min-h-screen flex flex-col" style="background: var(--bg-darkest); color: var(--text-primary);">
+    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(90deg, var(--primary), var(--primary-light));">
         <div class="container">
-            <a class="navbar-brand" href="/"><i class="fas fa-file-alt me-2"></i>CV Builder</a>
+            <a class="navbar-brand text-dark" href="/"><i class="fas fa-file-alt me-2"></i>CV Builder</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link text-dark" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/cv-maker">Create CV</a>
+                        <a class="nav-link active text-dark" href="/cv-maker">Create CV</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <div class="container py-5">
-        <h1 class="mb-4">Create Your Professional CV</h1>
-        
-        <form id="cv-form" action="/preview-cv" method="post">
-            <!-- Personal, Work, Education, Skills, Style sections as in create_cv.html -->
-            <!-- ... (full form content from create_cv.html) ... -->
-            <!-- The full content is pasted here, unchanged except for the JS link at the bottom -->
+    <div class="container py-5 flex-1">
+        <h1 class="mb-4 text-3xl font-bold text-center" style="color: var(--primary);">Create Your Professional CV</h1>
+        <form id="cv-form" action="/preview-cv" method="post" class="space-y-6">
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-dark">
                     <h3 class="mb-0"><i class="fas fa-user me-2"></i>Personal Information</h3>
                 </div>
                 <div class="card-body">
@@ -70,7 +80,7 @@
             </div>
 
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-dark">
                     <h3 class="mb-0"><i class="fas fa-briefcase me-2"></i>Work Experience</h3>
                 </div>
                 <div class="card-body" id="work-experience-container">
@@ -111,7 +121,7 @@
             </div>
 
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-dark">
                     <h3 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Education</h3>
                 </div>
                 <div class="card-body" id="education-container">
@@ -152,7 +162,7 @@
             </div>
 
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-dark">
                     <h3 class="mb-0"><i class="fas fa-cogs me-2"></i>Skills</h3>
                 </div>
                 <div class="card-body">
@@ -164,21 +174,21 @@
             </div>
 
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-dark">
                     <h3 class="mb-0"><i class="fas fa-palette me-2"></i>CV Style</h3>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Choose Template</label>
+                        <label class="form-label text-dark">Choose Template</label>
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="template" id="template1" value="modern" checked>
                                     <label class="form-check-label" for="template1">
                                         <div class="card">
-                                            <img src="https://via.placeholder.com/150x200?text=Modern" class="card-img-top" alt="Modern Template">
+                                            <img src="{{ url_for('static', filename='images/modern 1 of 2.png') }}" class="card-img-top" alt="Modern Template Preview">
                                             <div class="card-body">
-                                                <h5 class="card-title">Modern</h5>
+                                                <h5 class="card-title text-dark">Modern</h5>
                                             </div>
                                         </div>
                                     </label>
@@ -189,9 +199,9 @@
                                     <input class="form-check-input" type="radio" name="template" id="template2" value="classic">
                                     <label class="form-check-label" for="template2">
                                         <div class="card">
-                                            <img src="https://via.placeholder.com/150x200?text=Classic" class="card-img-top" alt="Classic Template">
+                                            <img src="{{ url_for('static', filename='images/classical 1 of 2.png') }}" class="card-img-top" alt="Classic Template Preview">
                                             <div class="card-body">
-                                                <h5 class="card-title">Classic</h5>
+                                                <h5 class="card-title text-dark">Classic</h5>
                                             </div>
                                         </div>
                                     </label>
@@ -202,9 +212,9 @@
                                     <input class="form-check-input" type="radio" name="template" id="template3" value="professional">
                                     <label class="form-check-label" for="template3">
                                         <div class="card">
-                                            <img src="https://via.placeholder.com/150x200?text=Professional" class="card-img-top" alt="Professional Template">
+                                            <img src="{{ url_for('static', filename='images/prof 1 of 1.png') }}" class="card-img-top" alt="Professional Template Preview">
                                             <div class="card-body">
-                                                <h5 class="card-title">Professional</h5>
+                                                <h5 class="card-title text-dark">Professional</h5>
                                             </div>
                                         </div>
                                     </label>
@@ -220,13 +230,11 @@
             </div>
         </form>
     </div>
-
-    <footer class="py-4 bg-dark text-white">
+    <footer class="py-4 bg-dark text-white mt-auto">
         <div class="container px-5">
             <p class="m-0 text-center">Copyright &copy; CV Builder 2025</p>
         </div>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/cv_maker.js') }}"></script>
 </body>
