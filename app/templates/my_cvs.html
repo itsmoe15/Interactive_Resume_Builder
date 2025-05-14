@@ -4,6 +4,34 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/my_cvs.css') }}">
+<style>
+.cv-grid { display: flex; flex-wrap: wrap; gap: 2rem; }
+.cv-card { width: 22%; min-width: 220px; background: var(--bg-dark); border-radius: 1rem; box-shadow: 0 2px 8px var(--shadow-dark); padding: 1rem; margin-bottom: 2rem; text-align: center; transition: box-shadow 0.2s; cursor: pointer; border: 2px solid var(--border-secondary); }
+.cv-card:hover { box-shadow: 0 6px 24px var(--shadow-primary); border-color: var(--primary); }
+.cv-preview-img { width: 100%; height: 280px; object-fit: contain; background: #fff; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border-secondary); }
+
+.filter-btn {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    color: var(--bg-darkest);
+    border: none;
+    border-radius: 2rem;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-primary);
+    transition: background 0.3s, color 0.3s, box-shadow 0.2s, border 0.2s;
+    outline: none;
+}
+.filter-btn.active, .filter-btn:focus, .filter-btn:hover {
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-lighter));
+    color: var(--text-dark);
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 16px var(--shadow-primary);
+}
+@media (max-width: 1200px) { .cv-card { width: 45%; } }
+@media (max-width: 800px) { .cv-card { width: 100%; } }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -12,34 +40,49 @@
         <i class="fas fa-folder-open me-2"></i>My CVs
     </h1>
 
-    <div class="templates-wrapper">
-        <!-- Template 1 -->
-        <div class="template-box">
-            <div class="template-button" onclick="showCVDetails('Template 1')">Template 1</div>
-            <img src="https://via.placeholder.com/210x297?text=CV+1" class="template-image" alt="Template 1">
-            <div class="cv-info">CV 01</div>
-            <div class="cv-info">Date: 2025-05-11</div>
-        </div>
-
-        <!-- Template 2 -->
-        <div class="template-box">
-            <div class="template-button" onclick="showCVDetails('Template 2')">Template 2</div>
-            <img src="https://via.placeholder.com/210x297?text=CV+2" class="template-image" alt="Template 2">
-            <div class="cv-info">CV 02</div>
-            <div class="cv-info">Date: 2025-05-11</div>
-        </div>
-
-        <!-- Template 3 -->
-        <div class="template-box">
-            <div class="template-button" onclick="showCVDetails('Template 3')">Template 3</div>
-            <img src="https://via.placeholder.com/210x297?text=CV+3" class="template-image" alt="Template 3">
-            <div class="cv-info">CV 03</div>
-            <div class="cv-info">Date: 2025-05-11</div>
-        </div>
+    <div class="d-flex justify-content-center mb-4 flex-wrap">
+        {% for style in styles %}
+            <button class="filter-btn" onclick="filterCVs('{{ style }}')" id="btn-{{ style }}">{{ style }}</button>
+        {% endfor %}
+        <button class="filter-btn" onclick="filterCVs('All')" id="btn-All">All</button>
     </div>
+
+    <div class="cv-grid" id="cvGrid">
+        {% for cv in cvs %}
+        <div class="cv-card" data-style="{{ cv.style }}" onclick="window.open('{{ cv.pdf_url }}', '_blank')">
+            {% if cv.pdf_exists %}
+                <embed src="{{ cv.pdf_url }}#toolbar=0&navpanes=0&scrollbar=0" type="application/pdf" class="cv-preview-img" />
+            {% else %}
+                <div class="cv-preview-img d-flex align-items-center justify-content-center" style="background: #eee; color: #888; font-size: 2rem;">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+            {% endif %}
+            <div class="cv-info fw-bold">{{ cv.name }}</div>
+            <div class="cv-info text-secondary">Date: {{ cv.date_created }}</div>
+            <div class="cv-info text-secondary">Style: {{ cv.style }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if cvs|length == 0 %}
+        <div class="text-center text-secondary mt-5">You have not created any CVs yet.</div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/my_cvs.js') }}"></script>
+<script>
+function filterCVs(style) {
+    document.querySelectorAll('.cv-card').forEach(function(card) {
+        if (style === 'All' || card.getAttribute('data-style') === style) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn-' + style).classList.add('active');
+}
+// Set default filter to All
+filterCVs('All');
+</script>
 {% endblock %} 

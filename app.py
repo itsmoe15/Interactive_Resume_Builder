@@ -10,9 +10,11 @@ from xhtml2pdf import pisa
 from pypdf import PdfReader, PdfWriter
 import pdfkit
 from datetime import datetime
+from flask_login import current_user
+import glob
 
 from app import create_app
-from app.models.user import db, User
+from app.models.user import db, User, CV, WorkExperience, Education, Style
 from app.services.ats_service import analyze_cv
 
 app = create_app()
@@ -164,7 +166,34 @@ def cv_maker():
 @app.route('/my-cvs')
 @login_required
 def my_cvs():
-    return render_template('my_cvs.html')
+    cvs = CV.query.filter_by(owner_id=current_user.id).all()
+    # Get PDF file info and creation date for each CV
+    cv_list = []
+    for cv in cvs:
+        pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gen_cvs', f'cv_{cv.id}.pdf')
+        if os.path.exists(pdf_path):
+            date_created = datetime.fromtimestamp(os.path.getctime(pdf_path))
+        else:
+            date_created = None
+        cv_list.append({
+            'id': cv.id,
+            'name': cv.full_name,
+            'style': cv.style.name if cv.style else 'Modern',
+            'pdf_exists': os.path.exists(pdf_path),
+            'pdf_url': url_for('download_cv_pdf', cv_id=cv.id) if os.path.exists(pdf_path) else None,
+            'date_created': date_created.strftime('%Y-%m-%d %H:%M') if date_created else 'N/A',
+        })
+    styles = ['Modern', 'Classic', 'Professional']
+    return render_template('my_cvs.html', cvs=cv_list, styles=styles)
+
+@app.route('/download-cv/<int:cv_id>')
+@login_required
+def download_cv_pdf(cv_id):
+    pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gen_cvs', f'cv_{cv_id}.pdf')
+    if os.path.exists(pdf_path):
+        return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], 'gen_cvs'), f'cv_{cv_id}.pdf')
+    else:
+        return '<h2>PDF not found</h2>', 404
 
 @app.route('/preview-cv', methods=['POST'])
 @login_required
@@ -177,6 +206,17 @@ def preview_cv():
         else:
             processed_data[key] = value[0] if value else ""
     return render_template('preview_cv.html', cv_data=processed_data)
+
+def parse_date(date_str):
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        try:
+            return datetime.strptime(date_str, "%Y-%m").date()
+        except ValueError:
+            return None
 
 @app.route('/generate-pdf', methods=['POST'])
 @login_required
@@ -219,8 +259,72 @@ def generate_pdf():
         else:
             processed_data[key] = value[0] if value else ""
 
-    html = render_template('cv_template.html', cv_data=processed_data)
+    # --- Save CV to database ---
+    from flask_login import current_user
+    from app.models.user import db, CV, WorkExperience, Education, Style
+    import shutil
 
+    # Map template to style_id
+    style_map = {'modern': 'Modern', 'classic': 'Classic', 'professional': 'Professional'}
+    style_name = style_map.get(processed_data.get('template', 'modern').lower(), 'Modern')
+    style = Style.query.filter_by(name=style_name).first()
+    style_id = style.id if style else 1
+
+    # Create CV entry
+    cv = CV(
+        owner_id=current_user.id,
+        full_name=processed_data.get('fullName', ''),
+        job_title=processed_data.get('jobTitle', ''),
+        email=processed_data.get('email', ''),
+        phone_number=processed_data.get('phone', ''),
+        address=processed_data.get('address', ''),
+        professional_summary=processed_data.get('summary', ''),
+        skills=processed_data.get('skills', ''),
+        style_id=style_id
+    )
+    db.session.add(cv)
+    db.session.flush()  # Get cv.id before commit
+
+    # Add work experiences
+    work_titles = processed_data.get('workTitle[]', [])
+    work_companies = processed_data.get('workCompany[]', [])
+    work_start_dates = processed_data.get('workStartDate[]', [])
+    work_end_dates = processed_data.get('workEndDate[]', [])
+    work_descriptions = processed_data.get('workDescription[]', [])
+    for i in range(len(work_titles)):
+        we = WorkExperience(
+            cv_id=cv.id,
+            job_title=work_titles[i],
+            company=work_companies[i] if i < len(work_companies) else '',
+            start_date=parse_date(work_start_dates[i]) if i < len(work_start_dates) else None,
+            end_date=parse_date(work_end_dates[i]) if i < len(work_end_dates) and work_end_dates[i] else None,
+            is_current=1 if (i < len(work_end_dates) and not work_end_dates[i]) else 0,
+            description=work_descriptions[i] if i < len(work_descriptions) else ''
+        )
+        db.session.add(we)
+
+    # Add educations
+    edu_degrees = processed_data.get('educationDegree[]', [])
+    edu_institutions = processed_data.get('educationInstitution[]', [])
+    edu_start_dates = processed_data.get('educationStartDate[]', [])
+    edu_end_dates = processed_data.get('educationEndDate[]', [])
+    edu_descriptions = processed_data.get('educationDescription[]', [])
+    for i in range(len(edu_degrees)):
+        edu = Education(
+            cv_id=cv.id,
+            degree_certificate=edu_degrees[i],
+            institution=edu_institutions[i] if i < len(edu_institutions) else '',
+            start_date=parse_date(edu_start_dates[i]) if i < len(edu_start_dates) else None,
+            end_date=parse_date(edu_end_dates[i]) if i < len(edu_end_dates) and edu_end_dates[i] else None,
+            is_current=1 if (i < len(edu_end_dates) and not edu_end_dates[i]) else 0,
+            description=edu_descriptions[i] if i < len(edu_descriptions) else ''
+        )
+        db.session.add(edu)
+
+    db.session.commit()
+
+    # --- Generate PDF ---
+    html = render_template('cv_template.html', cv_data=processed_data)
     with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as f:
         f.write(html.encode('utf-8'))
         html_file_path = f.name
@@ -238,7 +342,13 @@ def generate_pdf():
     try:
         pdf_data = pdfkit.from_file(html_file_path, False, options=options, configuration=config)
         os.unlink(html_file_path)
-        filename = f"CV_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        # Save PDF to uploads/gen_cvs/cv_<id>.pdf
+        gen_cvs_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'gen_cvs')
+        os.makedirs(gen_cvs_dir, exist_ok=True)
+        pdf_path = os.path.join(gen_cvs_dir, f"cv_{cv.id}.pdf")
+        with open(pdf_path, 'wb') as pdf_file:
+            pdf_file.write(pdf_data)
+        filename = f"cv_{cv.id}.pdf"
         response = make_response(pdf_data)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = f'attachment; filename={filename}'
