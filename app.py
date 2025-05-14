@@ -33,7 +33,7 @@ def load_user(user_id):
 @app.route('/')
 @login_required
 def home():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -138,8 +138,6 @@ def check_ats():
         # Analyze CV using our service
         analysis_result = analyze_cv(base64_content)
         
-        # Do NOT delete the file!
-        # os.remove(filepath)
         
         # Return the analysis result and file URL
         file_url = url_for('uploaded_file', filename=filename)

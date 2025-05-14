@@ -8,16 +8,16 @@
     body {
         overflow: hidden;
         font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
-        background: linear-gradient(135deg, #181c1f 0%, #23272b 100%);
-        color: #eafffa;
+        background: var(--bg-darkest);
+        color: var(--text-primary);
     }
     .chat-container {
         height: 100vh;
         background: none;
     }
     .chat-header {
-        color: #26ffed;
-        text-shadow: 0 2px 12px #26ffed44;
+        color: var(--primary);
+        text-shadow: 0 2px 12px var(--shadow-primary-glow);
         font-weight: 700;
         letter-spacing: 1px;
         font-size: 2rem;
@@ -26,9 +26,9 @@
     .chat-messages {
         max-height: calc(100vh - 220px);
         overflow-y: auto;
-        background: rgba(30, 36, 40, 0.85);
+        background: var(--secondary-bg);
         border-radius: 18px;
-        box-shadow: 0 8px 32px 0 #26ffed22;
+        box-shadow: 0 8px 32px 0 var(--shadow-primary);
         padding: 2rem 1.5rem;
         margin-bottom: 1.5rem;
         backdrop-filter: blur(6px);
@@ -42,23 +42,23 @@
         font-size: 1.08rem;
         line-height: 1.6;
         word-break: break-word;
-        box-shadow: 0 2px 8px #26ffed22;
+        box-shadow: 0 2px 8px var(--shadow-primary);
         font-family: inherit;
     }
     .user-message {
-        background: linear-gradient(90deg, #26ffed 60%, #54fff1 100%);
-        color: #181c1f;
+        background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light) 100%);
+        color: var(--bg-darkest);
         margin-left: auto;
         border-bottom-right-radius: 0.4rem;
         font-weight: 600;
-        box-shadow: 0 2px 12px #26ffed44;
+        box-shadow: 0 2px 12px var(--shadow-primary-glow);
     }
     .bot-message {
-        background: rgba(36, 44, 50, 0.95);
-        color: #eafffa;
+        background: var(--glass-effect);
+        color: var(--text-primary);
         margin-right: auto;
         border-bottom-left-radius: 0.4rem;
-        border: 1.5px solid #26ffed33;
+        border: 1.5px solid var(--primary);
         font-weight: 400;
     }
     .message::after {
@@ -68,9 +68,9 @@
         margin-top: 0.5rem;
     }
     .chat-input input {
-        background: rgba(30, 36, 40, 0.95) !important;
-        color: #fff !important;
-        border: 2px solid #26ffed55;
+        background: var(--glass-effect) !important;
+        color: var(--text-primary) !important;
+        border: 2px solid var(--primary);
         border-radius: 30px;
         padding: 14px 22px;
         font-size: 1.08rem;
@@ -78,32 +78,32 @@
         transition: border 0.2s, box-shadow 0.2s;
     }
     .chat-input input:focus {
-        background: rgba(30, 36, 40, 0.95) !important;
-        color: #fff !important;
-        border-color: #26ffed;
-        box-shadow: 0 0 0 0.18rem #26ffed55;
+        background: var(--glass-effect) !important;
+        color: var(--text-primary) !important;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.18rem var(--shadow-primary-glow);
         outline: none;
     }
     .chat-input button {
-        background: linear-gradient(90deg, #26ffed 60%, #54fff1 100%);
+        background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light) 100%);
         border: none;
         border-radius: 30px;
         padding: 14px 28px;
-        color: #181c1f;
+        color: var(--bg-darkest);
         font-weight: 700;
         font-size: 1.08rem;
         transition: all 0.2s;
-        box-shadow: 0 2px 8px #26ffed33;
+        box-shadow: 0 2px 8px var(--shadow-primary);
     }
     .chat-input button:hover {
-        background: linear-gradient(90deg, #54fff1 60%, #26ffed 100%);
+        background: linear-gradient(90deg, var(--primary-light) 60%, var(--primary) 100%);
         transform: translateY(-2px) scale(1.04);
-        box-shadow: 0 6px 16px #26ffed55;
+        box-shadow: 0 6px 16px var(--shadow-primary-glow);
     }
     .cv-preview {
-        background: rgba(30, 36, 40, 0.85);
+        background: var(--secondary-bg);
         border-radius: 18px;
-        box-shadow: 0 8px 32px 0 #26ffed22;
+        box-shadow: 0 8px 32px 0 var(--shadow-primary);
         padding: 2rem 1.5rem;
         height: 100%;
         backdrop-filter: blur(6px);
@@ -111,19 +111,19 @@
         flex-direction: column;
     }
     .cv-preview-header {
-        color: #26ffed;
-        text-shadow: 0 2px 12px #26ffed44;
+        color: var(--primary);
+        text-shadow: 0 2px 12px var(--shadow-primary-glow);
         font-weight: 700;
         font-size: 1.5rem;
         margin-bottom: 1.2rem;
     }
     .cv-preview-content {
-        background: rgba(36, 44, 50, 0.95);
+        background: var(--glass-effect);
         border-radius: 15px;
-        box-shadow: 0 4px 16px #26ffed22;
+        box-shadow: 0 4px 16px var(--shadow-primary);
         padding: 1.5rem;
         min-height: 300px;
-        color: #eafffa;
+        color: var(--text-primary);
         font-family: inherit;
         font-size: 1.05rem;
         overflow-y: auto;
@@ -134,17 +134,17 @@
         border-radius: 30px;
         padding: 10px 24px;
         font-size: 1.08rem;
-        border: 2px solid #26ffed;
+        border: 2px solid var(--primary);
         background: transparent;
-        color: #26ffed;
+        color: var(--primary);
         transition: all 0.2s;
-        box-shadow: 0 2px 8px #26ffed22;
+        box-shadow: 0 2px 8px var(--shadow-primary);
     }
     .btn:hover, .btn-outline-primary:hover {
-        background: linear-gradient(90deg, #26ffed 60%, #54fff1 100%);
-        color: #181c1f;
-        border-color: #54fff1;
-        box-shadow: 0 6px 16px #26ffed55;
+        background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light) 100%);
+        color: var(--bg-darkest);
+        border-color: var(--primary-light);
+        box-shadow: 0 6px 16px var(--shadow-primary-glow);
         transform: translateY(-2px) scale(1.04);
     }
     /* Custom scrollbar */
@@ -154,17 +154,17 @@
     }
     .chat-messages::-webkit-scrollbar-track,
     .cv-preview-content::-webkit-scrollbar-track {
-        background: #23272b;
+        background: var(--primary-bg);
         border-radius: 10px;
     }
     .chat-messages::-webkit-scrollbar-thumb,
     .cv-preview-content::-webkit-scrollbar-thumb {
-        background: #26ffed;
+        background: var(--primary);
         border-radius: 10px;
     }
     .chat-messages::-webkit-scrollbar-thumb:hover,
     .cv-preview-content::-webkit-scrollbar-thumb:hover {
-        background: #54fff1;
+        background: var(--primary-light);
     }
     @media (max-width: 900px) {
         .chat-header, .cv-preview-header {

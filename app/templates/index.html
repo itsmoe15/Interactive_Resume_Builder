@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Home - CV Maker{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='Home+Navbar/style.css') }}">
+<style>
+.dashboard-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+@media (max-width: 1200px) {
+    .dashboard-content { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 800px) {
+    .dashboard-content { grid-template-columns: 1fr; }
+}
+.logout-btn-top {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    color: var(--bg-darkest);
+    border: none;
+    border-radius: 2rem;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 2px 8px var(--shadow-primary);
+    transition: background 0.3s, color 0.3s, box-shadow 0.2s, border 0.2s;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.logout-btn-top:hover {
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-lighter));
+    color: var(--text-dark);
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 16px var(--shadow-primary);
+}
+</style>
+{% endblock %}
+{% block content %}
+<a href="{{ url_for('logout') }}" class="logout-btn-top"><i class="fas fa-sign-out-alt"></i>Logout</a>
+<div class="main-content">
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1>Welcome, <span class="username">{{ current_user.username }}</span>!</h1>
+            <p class="subtitle">Create, manage, and optimize your professional CV</p>
+        </header>
+        <div class="dashboard-content">
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-file-alt card-icon"></i>
+                    <h2>Create CV</h2>
+                </div>
+                <div class="card-content">
+                    <p>Build your professional CV using our interactive form builder. Choose from multiple templates and customize your content.</p>
+                    <a href="{{ url_for('cv_maker') }}" class="card-action-btn" id="create-cv-btn">
+                        <i class="fas fa-plus"></i> Create New CV
+                    </a>
+                </div>
+            </section>
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-robot card-icon"></i>
+                    <h2>AI Assistant</h2>
+                </div>
+                <div class="card-content">
+                    <p>Let our AI assistant help you create a professional CV through a conversational interface.</p>
+                    <a href="{{ url_for('chatbot') }}" class="card-action-btn" id="ai-assistant-btn">
+                        <i class="fas fa-comment-dots"></i> Chat with AI
+                    </a>
+                </div>
+            </section>
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-folder card-icon"></i>
+                    <h2>My CVs</h2>
+                </div>
+                <div class="card-content">
+                    <p>View and manage your saved CVs. Edit, download, or create new versions of your existing CVs.</p>
+                    <a href="{{ url_for('my_cvs') }}" class="card-action-btn" id="view-cvs-btn">
+                        <i class="fas fa-eye"></i> View CVs
+                    </a>
+                </div>
+            </section>
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-search card-icon"></i>
+                    <h2>ATS Checker</h2>
+                </div>
+                <div class="card-content">
+                    <p>Optimize your CV for Applicant Tracking Systems. Get instant feedback and suggestions for improvement.</p>
+                    <a href="{{ url_for('ats_checker') }}" class="card-action-btn" id="ats-checker-btn">
+                        <i class="fas fa-check-circle"></i> Check CV
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='Home+Navbar/main.js') }}"></script>
+{% endblock %} 

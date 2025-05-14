@@ -1,23 +1,24 @@
 :root {
-    /* Primary Colors */
-    --primary: #26FFED;
-    --primary-light: #54FFF1;
-    --primary-lighter: #84FFF5;
+    /* Main Backgrounds */
+    --primary-bg: #171717;
+    --secondary-bg: rgba(30, 30, 30, 0.8);
+    --bg-darkest: #0a0a0a;
+    --glass-effect: rgba(23, 23, 23, 0.85);
+    --glass-border: rgba(38, 255, 237, 0.1);
 
-    /* Background Colors */
-    --bg-dark: #191919;
-    --bg-darker: #1a1a1a;
-    --bg-darkest: #151515;
-    --bg-light: #212121;
-    --bg-lighter: #1f1f1f;
+    /* Accent & Primary Colors */
+    --primary: #26ffed;
+    --primary-light: #54fff1;
+    --primary-lighter: #84fff5;
+    --btn-hover: rgba(38, 255, 237, 0.2);
 
     /* Text Colors */
     --text-primary: #ffffff;
-    --text-secondary: #cccccc;
+    --text-muted: rgba(255, 255, 255, 0.7);
     --text-dark: #1a1a1a;
 
     /* Border Colors */
-    --border-primary: #26FFED;
+    --border-primary: #26ffed;
     --border-secondary: #333333;
 
     /* Shadow Colors */

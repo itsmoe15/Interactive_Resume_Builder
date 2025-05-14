@@ -1,7 +1,7 @@
 @import 'colors.css';
 
 body {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-darkest);
     color: var(--text-primary);
     font-family: Arial, sans-serif;
     padding: 20px;
@@ -39,6 +39,8 @@ h1 {
 
 .template-button:hover {
     transform: scale(1.05);
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-lighter));
+    color: var(--text-dark);
 }
 
 .template-image {
@@ -46,12 +48,12 @@ h1 {
     height: 297px;
     object-fit: cover;
     border-radius: 5px;
-    background-color: var(--bg-light);
+    background-color: var(--secondary-bg);
     border: 2px solid var(--primary);
 }
 
 .cv-info {
     margin-top: 8px;
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 } 
