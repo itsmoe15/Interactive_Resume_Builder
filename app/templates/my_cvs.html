@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/my_cvs.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_cvs_extra.css') }}">
 <style>
 .cv-grid { display: flex; flex-wrap: wrap; gap: 2rem; }
 .cv-card { width: 22%; min-width: 220px; background: var(--bg-dark); border-radius: 1rem; box-shadow: 0 2px 8px var(--shadow-dark); padding: 1rem; margin-bottom: 2rem; text-align: center; transition: box-shadow 0.2s; cursor: pointer; border: 2px solid var(--border-secondary); }
@@ -70,6 +71,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{{ url_for('static', filename='js/my_cvs_extra.js') }}"></script>
 <script>
 function filterCVs(style) {
     document.querySelectorAll('.cv-card').forEach(function(card) {

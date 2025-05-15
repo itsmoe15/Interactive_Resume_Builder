@@ -1,0 +1,45 @@
+.dashboard-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    min-height: 60vh;
+}
+.dashboard-card {
+    flex: 1 1 300px;
+    max-width: 350px;
+    min-width: 260px;
+    margin: 0 1rem;
+}
+@media (max-width: 1200px) {
+    .dashboard-content { gap: 1.5rem; }
+}
+@media (max-width: 800px) {
+    .dashboard-content { flex-direction: column; align-items: center; }
+    .dashboard-card { max-width: 95vw; }
+}
+.logout-btn-top {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    color: var(--bg-darkest);
+    border: none;
+    border-radius: 2rem;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 2px 8px var(--shadow-primary);
+    transition: background 0.3s, color 0.3s, box-shadow 0.2s, border 0.2s;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.logout-btn-top:hover {
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-lighter));
+    color: var(--text-dark);
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 16px var(--shadow-primary);
+} 

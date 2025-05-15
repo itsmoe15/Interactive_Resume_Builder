@@ -3,18 +3,29 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{{ url_for('static', filename='Home+Navbar/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/homestyle.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 <style>
 .dashboard-content {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 2rem;
+    min-height: 60vh;
+}
+.dashboard-card {
+    flex: 1 1 300px;
+    max-width: 350px;
+    min-width: 260px;
+    margin: 0 1rem;
 }
 @media (max-width: 1200px) {
-    .dashboard-content { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-content { gap: 1.5rem; }
 }
 @media (max-width: 800px) {
-    .dashboard-content { grid-template-columns: 1fr; }
+    .dashboard-content { flex-direction: column; align-items: center; }
+    .dashboard-card { max-width: 95vw; }
 }
 .logout-btn-top {
     position: absolute;
@@ -65,18 +76,6 @@
             </section>
             <section class="dashboard-card">
                 <div class="card-header">
-                    <i class="fas fa-robot card-icon"></i>
-                    <h2>AI Assistant</h2>
-                </div>
-                <div class="card-content">
-                    <p>Let our AI assistant help you create a professional CV through a conversational interface.</p>
-                    <a href="{{ url_for('chatbot') }}" class="card-action-btn" id="ai-assistant-btn">
-                        <i class="fas fa-comment-dots"></i> Chat with AI
-                    </a>
-                </div>
-            </section>
-            <section class="dashboard-card">
-                <div class="card-header">
                     <i class="fas fa-folder card-icon"></i>
                     <h2>My CVs</h2>
                 </div>
@@ -104,5 +103,5 @@
 </div>
 {% endblock %}
 {% block extra_js %}
-<script src="{{ url_for('static', filename='Home+Navbar/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %} 

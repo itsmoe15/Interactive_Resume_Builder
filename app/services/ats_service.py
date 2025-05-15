@@ -1,15 +1,15 @@
-import base64
 import json
 from google import genai
 from google.genai import types
 
+
 def analyze_cv(cv_content_base64):
     """
     Analyze a CV using Gemini AI and return ATS compatibility results.
-    
+
     Args:
         cv_content_base64 (str): Base64 encoded CV content
-        
+
     Returns:
         dict: Analysis results following the defined schema
     """
@@ -22,114 +22,127 @@ def analyze_cv(cv_content_base64):
         types.Content(
             role="user",
             parts=[
-                types.Part.from_text(text=f"""Please analyze this CV for ATS compatibility. Here's the base64 encoded content:
+                types.Part.from_text(
+                    text=f"""Please analyze this CV for ATS compatibility. Here's the base64 encoded content:
                 {cv_content_base64}
                 
-                Please provide a detailed analysis following the schema defined in the system instructions."""),
+                Please provide a detailed analysis following the schema defined in the system instructions."""
+                ),
             ],
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
         response_mime_type="application/json",
         response_schema=genai.types.Schema(
-            type = genai.types.Type.OBJECT,
-            required = ["overall_score", "rating", "sub_scores", "issues"],
-            properties = {
+            type=genai.types.Type.OBJECT,
+            required=["overall_score", "rating", "sub_scores", "issues"],
+            properties={
                 "overall_score": genai.types.Schema(
-                    type = genai.types.Type.INTEGER,
-                    description = "Aggregated ATS compatibility score (0–100).",
+                    type=genai.types.Type.INTEGER,
+                    description="Aggregated ATS compatibility score (0–100).",
                 ),
                 "rating": genai.types.Schema(
-                    type = genai.types.Type.STRING,
-                    description = "Qualitative label based on overall_score.",
-                    enum = ["Excellent", "Good", "Moderate", "Poor"],
+                    type=genai.types.Type.STRING,
+                    description="Qualitative label based on overall_score.",
+                    enum=["Excellent", "Good", "Moderate", "Poor"],
                 ),
                 "sub_scores": genai.types.Schema(
-                    type = genai.types.Type.OBJECT,
-                    description = "Individual check scores (0.0–1.0) weighted in final score calculation.",
-                    required = ["file_format", "layout_formatting", "sections_order", "contact_information", "professional_summary", "experience_education", "keywords_skills", "length", "language_grammar", "ats_pitfalls"],
-                    properties = {
+                    type=genai.types.Type.OBJECT,
+                    description="Individual check scores (0.0–1.0) weighted in final score calculation.",
+                    required=[
+                        "file_format",
+                        "layout_formatting",
+                        "sections_order",
+                        "contact_information",
+                        "professional_summary",
+                        "experience_education",
+                        "keywords_skills",
+                        "length",
+                        "language_grammar",
+                        "ats_pitfalls",
+                    ],
+                    properties={
                         "file_format": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "layout_formatting": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "sections_order": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "contact_information": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "professional_summary": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "experience_education": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "keywords_skills": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "length": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "language_grammar": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "ats_pitfalls": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
+                            type=genai.types.Type.NUMBER,
                         ),
                         "tailoring": genai.types.Schema(
-                            type = genai.types.Type.NUMBER,
-                            description = "Only present and scored if a job description was provided.",
+                            type=genai.types.Type.NUMBER,
+                            description="Only present and scored if a job description was provided.",
                         ),
                     },
                 ),
                 "issues": genai.types.Schema(
-                    type = genai.types.Type.ARRAY,
-                    description = "List of categories with findings and suggestions.",
-                    items = genai.types.Schema(
-                        type = genai.types.Type.OBJECT,
-                        required = ["category", "findings", "suggestions"],
-                        properties = {
+                    type=genai.types.Type.ARRAY,
+                    description="List of categories with findings and suggestions.",
+                    items=genai.types.Schema(
+                        type=genai.types.Type.OBJECT,
+                        required=["category", "findings", "suggestions"],
+                        properties={
                             "category": genai.types.Schema(
-                                type = genai.types.Type.STRING,
-                                description = "Name of the check area (e.g., 'Experience & Education').",
+                                type=genai.types.Type.STRING,
+                                description="Name of the check area (e.g., 'Experience & Education').",
                             ),
                             "findings": genai.types.Schema(
-                                type = genai.types.Type.ARRAY,
-                                description = "Detected issues in this category.",
-                                items = genai.types.Schema(
-                                    type = genai.types.Type.STRING,
+                                type=genai.types.Type.ARRAY,
+                                description="Detected issues in this category.",
+                                items=genai.types.Schema(
+                                    type=genai.types.Type.STRING,
                                 ),
                             ),
                             "suggestions": genai.types.Schema(
-                                type = genai.types.Type.ARRAY,
-                                description = "Actionable recommendations for each finding.",
-                                items = genai.types.Schema(
-                                    type = genai.types.Type.STRING,
+                                type=genai.types.Type.ARRAY,
+                                description="Actionable recommendations for each finding.",
+                                items=genai.types.Schema(
+                                    type=genai.types.Type.STRING,
                                 ),
                             ),
                         },
                     ),
                 ),
                 "tailoring": genai.types.Schema(
-                    type = genai.types.Type.OBJECT,
-                    description = "Only included if a job description was supplied.",
-                    required = ["missing_keywords", "actions"],
-                    properties = {
+                    type=genai.types.Type.OBJECT,
+                    description="Only included if a job description was supplied.",
+                    required=["missing_keywords", "actions"],
+                    properties={
                         "missing_keywords": genai.types.Schema(
-                            type = genai.types.Type.ARRAY,
-                            description = "JD keywords not present in the CV.",
-                            items = genai.types.Schema(
-                                type = genai.types.Type.STRING,
+                            type=genai.types.Type.ARRAY,
+                            description="JD keywords not present in the CV.",
+                            items=genai.types.Schema(
+                                type=genai.types.Type.STRING,
                             ),
                         ),
                         "actions": genai.types.Schema(
-                            type = genai.types.Type.ARRAY,
-                            description = "How to integrate those keywords into the CV.",
-                            items = genai.types.Schema(
-                                type = genai.types.Type.STRING,
+                            type=genai.types.Type.ARRAY,
+                            description="How to integrate those keywords into the CV.",
+                            items=genai.types.Schema(
+                                type=genai.types.Type.STRING,
                             ),
                         ),
                     },
@@ -137,7 +150,8 @@ def analyze_cv(cv_content_base64):
             },
         ),
         system_instruction=[
-            types.Part.from_text(text="""
+            types.Part.from_text(
+                text="""
 
 ## System Instructions: ATS Compatibility Checker
 
@@ -220,7 +234,8 @@ You are an AI that ingests a user's CV (and optional job description), runs a ba
 
 > *…and so on for checks 3–11, each with clear pass/fail rules or graded measures…*
 -
-```"""),
+```"""
+            ),
         ],
     )
 
@@ -230,22 +245,20 @@ You are an AI that ingests a user's CV (and optional job description), runs a ba
             contents=contents,
             config=generate_content_config,
         )
-        
-        # Parse the response text as JSON
+
         result = json.loads(response.text)
-        
-        # Ensure all required fields are present
+
         required_fields = ["overall_score", "rating", "sub_scores", "issues"]
         for field in required_fields:
             if field not in result:
                 raise ValueError(f"Missing required field: {field}")
-        
+
         return result
-        
+
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON response: {e}")
         print(f"Raw response: {response.text}")
         raise ValueError("Invalid response format from AI model")
     except Exception as e:
         print(f"Error in analyze_cv: {e}")
-        raise 
+        raise
